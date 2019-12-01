@@ -1,6 +1,3 @@
-# Advent of Code
-# 2019-01-01
-
 import os
 
 assert os.path.isfile("data.txt"), "input must be saved in '2019/01/data.txt'"

@@ -1,6 +1,3 @@
-# Advent of Code
-# 2019-12-01
-
 @assert isfile("data.txt") "input must be saved in '2019/01/data.txt'"
 module_masses = parse.(Int64, readlines("data.txt"))
 
