@@ -1,9 +1,9 @@
-@assert isfile("data.txt") "input must be saved in '2019/01/data.txt'"
-module_masses = parse.(Int64, readlines("data.txt"))
+@assert length(ARGS) > 0 "first argument must be puzzle input."
+module_masses = parse.(Int64, ARGS[1])
 
 # part 1
 fuel = sum(div.(module_masses, 3) .- 2)
-println("Part 1 Fuel Required: $fuel")
+println(fuel)
 
 # part 2
 calc_fuel_required = function(mass)
@@ -12,4 +12,4 @@ calc_fuel_required = function(mass)
 end
 
 fuel = sum(calc_fuel_required.(module_masses))
-println("Part 2 Fuel Required: $fuel")
+println(fuel)

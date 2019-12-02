@@ -1,5 +1,5 @@
-@assert isfile("data.txt") "input must be saved in '2019/02/data.txt'"
-mem_in = parse.(Int64, split(readline("data.txt"), ","))
+@assert length(ARGS) > 0 "first argument must be puzzle input."
+mem_in = parse.(Int64, split(ARGS[1], ","))
 
 inst_add! = function(mem, i)
     mem[mem[i+3]+1] = mem[mem[i+1]+1] + mem[mem[i+2]+1]

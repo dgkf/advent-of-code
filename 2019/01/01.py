@@ -6,7 +6,7 @@ with open("data.txt") as f:
 
 # part 1
 fuel = sum([mass // 3 - 2 for mass in module_masses])
-print(f"Part 1 Fuel Required: {fuel}")
+print(fuel)
 
 # part 2
 def calc_fuel_required(mass):
@@ -14,4 +14,4 @@ def calc_fuel_required(mass):
     return 0 if fuel <= 0 else fuel + calc_fuel_required(fuel)
 
 fuel = sum([calc_fuel_required(mass) for mass in module_masses])
-print(f"Part 2 Fuel Required: {fuel}")
+print(fuel)
