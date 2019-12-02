@@ -1,5 +1,7 @@
-@assert length(ARGS) > 0 "first argument must be puzzle input."
-module_masses = parse.(Int64, ARGS[1])
+input = readlines()
+@assert(length(input) > 0, "puzzle input must be passed to stdin.")
+
+module_masses = parse.(Int64, input[1])
 
 # part 1
 fuel = sum(div.(module_masses, 3) .- 2)

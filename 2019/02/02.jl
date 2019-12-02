@@ -1,5 +1,7 @@
-@assert length(ARGS) > 0 "first argument must be puzzle input."
-mem_in = parse.(Int64, split(ARGS[1], ","))
+input = readlines()
+@assert(length(input) > 0, "puzzle input must be passed to stdin.")
+
+mem_in = parse.(Int64, split(input[1], ","))
 
 inst_add! = function(mem, i)
     mem[mem[i+3]+1] = mem[mem[i+1]+1] + mem[mem[i+2]+1]
