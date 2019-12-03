@@ -38,7 +38,7 @@ end
 
 find_min_distance = function(ps)
     min_distance = Inf
-    for i=1:(size(ps[1])[1]-1), j=1:(size(ps[2])[1]-1)
+    for i=1:(length(ps[1])-1), j=1:(length(ps[2])-1)
         cross = find_intersection(ps[1][i], ps[1][i+1], ps[2][j], ps[2][j+1])
 
         if cross !== nothing
@@ -53,7 +53,7 @@ end
 
 find_min_path_dist = function(ps)
     min_path_dist = Inf
-    for i=1:(size(ps[1])[1]-1), j=1:(size(ps[2])[1]-1)
+    for i=1:(length(ps[1])-1), j=1:(length(ps[2])-1)
         cross = find_intersection(ps[1][i], ps[1][i+1], ps[2][j], ps[2][j+1])
 
         if cross !== nothing
