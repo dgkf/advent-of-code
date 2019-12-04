@@ -17,7 +17,9 @@ if (-Not (Test-Path "$path/cache/$year-$day.txt")) {
 
     $session.Cookies.Add($cookie)
 
-    Invoke-WebRequest "https://adventofcode.com/$year/day/$day/input" -WebSession $session -OutFile "$path/cache/$year-$day.txt"
+    Invoke-WebRequest "https://adventofcode.com/$year/day/$day/input" `
+        -WebSession $session `
+        -OutFile "$path/cache/$year-$day.txt"
 }
 
 Get-Content -Path "$path/cache/$year-$day.txt"
