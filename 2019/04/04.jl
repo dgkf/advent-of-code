@@ -1,7 +1,7 @@
 input = readlines()
 @assert(length(input) > 0, "puzzle input must be passed to stdin.")
 
-lb, ub = parse.(Int, split(input, "-"))
+lb, ub = parse.(Int, split(input[1], "-"))
 
 
 # part 1
