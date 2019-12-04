@@ -13,7 +13,7 @@ end))
 
 # part 2
 println(sum(map(lb:ub) do i
-    d = digits(i, base = 10)
+	d = digits(i, base = 10)
 	all(diff(d) .<= 0) && 2 in values(counter(d))
 end))
 
