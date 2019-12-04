@@ -8,7 +8,9 @@ for i=lb:ub
     is_increasing = true
     sequential_count = 1
     has_sequential_pair = false
+
     d = reverse(digits(i, base = 10))
+    
     for di=2:length(d)
         if (d[di] < d[di-1]) 
             is_increasing = false
@@ -26,8 +28,8 @@ for i=lb:ub
             sequential_count = 1
         end
     end
+
     if is_increasing && has_sequential_pair
-        println(i)
         global n += 1
     end
 end
