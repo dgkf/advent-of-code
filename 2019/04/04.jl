@@ -7,7 +7,7 @@ lb, ub = parse.(Int, split(input[1], "-"))
 
 # part 1
 println(sum(map(lb:ub) do i
-    d = digits(i, base = 10)
+	d = digits(i, base = 10)
 	all(diff(d) .<= 0) && any(values(counter(d)) .>= 2)
 end))
 
