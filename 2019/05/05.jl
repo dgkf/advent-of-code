@@ -22,7 +22,6 @@ end
 
 op_output! = function(m, i, modes)
     push!(op_stdout, access(m, i+1, modes[1]))
-    # println(access(m, i+1, modes[1]))
     return i+2
 end
 
