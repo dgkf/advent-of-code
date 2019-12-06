@@ -23,12 +23,12 @@ op!(c::Val{8}, m, i, params) = (m[m[i+3]] = params[1] == params[2]; i+4)
 run(memory; i=0) = while opcode(memory, i) != 99; i = op!(memory, i); end
 
 # part 1
-op_stdin, op_stdout = [1], []
+prog_stdin, prog_stdout = [1], []
 run(copy(memory))
-println(last(op_stdout))
+println(last(prog_stdout))
 
 # part 2
-op_stdin, op_stdout = [5], []
+prog_stdin, prog_stdout = [5], []
 run(copy(memory))
-println(last(op_stdout))
+println(last(prog_stdout))
 
