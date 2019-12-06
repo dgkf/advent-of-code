@@ -1,9 +1,6 @@
 using LightGraphs
 using MetaGraphs
 
-# extend MetaGraphs indexing to support node data
-Base.getindex(x::MetaGraphs.AbstractMetaGraph, indx) = x[indx, :data]
-
 # extend MetaGraphs with constructor from object pairs
 function MetaGraph(x::AbstractArray{<:Pair})
 	objs = sort(unique([first.(x)..., last.(x)...]))
@@ -15,7 +12,6 @@ function MetaGraph(x::AbstractArray{<:Pair})
 	return g
 end
 
-# handle generators by collapsing into array first
 function MetaGraph(x::Base.Generator, args...; kwargs...) 
 	MetaGraph([x...], args...; kwargs...)
 end
@@ -24,8 +20,8 @@ end
 g = MetaGraph(a => b for (a, b)=split.(readlines(), ")"))
 
 # part 1
-println(sum(length.(a_star(g, g["COM"], i) for i=vertices(g))))
+println(sum(length.(a_star(g, g["COM", :data], i) for i=vertices(g))))
 
 # part 2
-println(length(a_star(g, g["YOU"], g["SAN"])) - 2)
+println(length(a_star(g, g["YOU", :data], g["SAN", :data])) - 2)
 
