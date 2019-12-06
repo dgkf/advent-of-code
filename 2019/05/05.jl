@@ -4,7 +4,7 @@ memory = parse.(Int64, split(readlines()[1], ","))
 # create 0-indexed memory type
 struct MemoryArray; vec :: AbstractArray; end
 Base.getindex(m::MemoryArray, i) = get(m.vec, i .+ 1, 0)
-Base.setindex!(m::MemoryArray, val, i) = setindex!(m.vec, val, i+1)
+Base.setindex!(m::MemoryArray, val, i) = setindex!(m.vec, val, i .+ 1)
 
 # immediate and parameter mode memory reading with bounded indices
 mem_access(m, i, immediate) = immediate ? m[i] : m[m[i]]
