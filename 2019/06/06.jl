@@ -1,11 +1,12 @@
 using LightGraphs
 using MetaGraphs
 
-input = hcat((split(line, ")") for line=readlines("../../utils/cache/2019-6.txt"))...)
-
-bodys = sort(unique(hcat(input...)))
+# read in input, create array of data and map input to indices
+input = hcat((split(line, ")") for line=readlines())...)
+bodys = sort(unique(input))
 input = findfirst.(.==(input), [bodys])
 
+# build graph from node indices map, bind orbital body data
 g = MetaGraph(length(bodys))
 set_prop!.([g], 1:length(bodys), [:label], bodys)
 set_indexing_prop!(g, :label)
