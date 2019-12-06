@@ -1,7 +1,4 @@
-input = readlines()
-@assert(length(input) > 0, "puzzle input must be passed to stdin.")
-
-mem_in = parse.(Int64, split(input[1], ","))
+mem_in = parse.(Int64, split(readlines()[1], ","))
 
 inst_add! = function(mem, i)
     mem[mem[i+3]+1] = mem[mem[i+1]+1] + mem[mem[i+2]+1]

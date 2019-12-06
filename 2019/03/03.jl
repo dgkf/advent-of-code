@@ -1,6 +1,3 @@
-input = readlines()
-@assert(length(input) > 0, "puzzle input must be passed to stdin.")
-
 # define a coordinate type as syntactic sugar around an array (point.x)
 # it's much slower, but also easier to keep track of
 struct Coord; vec :: AbstractArray; end
@@ -10,7 +7,7 @@ coord_prop(coord::Coord, sym::Val{:x}, x) = coord.vec[1]
 coord_prop(coord::Coord, sym::Val{:y}, x) = coord.vec[2]
 coord_prop(coord::Coord, sym, x) = getfield(coord, x)
 
-(lineA, lineB) = map(input) do line
+(lineA, lineB) = map(readlines()) do line
     cumsum(map(split(line, ",")) do inst
         val = parse(Int, inst[2:end])
         if     inst[1] == 'R'; Coord([val, 0, val])
