@@ -1,20 +1,27 @@
 using LightGraphs
 using MetaGraphs
 
-# read in input, create array of data and map input to indices
-input = hcat((split(line, ")") for line=readlines())...)
-bodys = sort(unique(input))
-input = findfirst.(.==(input), [bodys])
+# extend MetaGraphs indexing to support node data
+Base.getindex(x::MetaGraphs.AbstractMetaGraph, indx) = x[indx, :data]
 
-# build graph from node indices map, bind orbital body data
-g = MetaGraph(length(bodys))
-set_prop!.([g], 1:length(bodys), [:label], bodys)
-set_indexing_prop!(g, :label)
-add_edge!.([g], input[1,:], input[2,:])
+# extend MetaGraphs with constructor from object pairs
+function MetaGraph(x::AbstractArray{<:Pair})
+	objs = sort(unique([first.(x)..., last.(x)...]))
+	g = MetaGraphs.MetaGraph(length(objs))
+	for (i, obj)=enumerate(objs); set_prop!(g, i, :data, obj); end
+	set_indexing_prop!(g, :data)
+	x_indxs = [findfirst(==(a), objs) => findfirst(==(b), objs) for (a,b)=x]
+	for (i, (a, b))=enumerate(x_indxs); add_edge!(g, a, b); end
+	return g
+end
+
+# build graph from pairs
+input = [Pair(split(line, ")")...) for line=readlines()]
+g = MetaGraph(input)
 
 # part 1
-println(sum(length.(a_star.([g], [g["COM", :label]], vertices(g)))))
+println(sum(length.(a_star(g, g["COM"], i) for i=vertices(g))))
 
 # part 2
-println(length(a_star(g, getindex.([g], ["YOU", "SAN"], [:label])...))-2)
+println(length(a_star(g, g["YOU"], g["SAN"])) - 2)
 
