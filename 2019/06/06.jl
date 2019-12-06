@@ -1,22 +1,19 @@
-using SparseArrays
 using LightGraphs
+using MetaGraphs
 
-input = hcat((split(line, ")") for line=readlines())...)
+input = hcat((split(line, ")") for line=readlines("../../utils/cache/2019-6.txt"))...)
+
 bodys = sort(unique(hcat(input...)))
+input = findfirst.(.==(input), [bodys])
 
-orbits = SimpleDiGraph(sparse(
-    findfirst.(.==(input[1,:]), [bodys]),
-    findfirst.(.==(input[2,:]), [bodys]), 
-    repeat([1], size(input)[2])))
+g = MetaGraph(length(bodys))
+set_prop!.([g], 1:length(bodys), [:label], bodys)
+set_indexing_prop!(g, :label)
+add_edge!.([g], input[1,:], input[2,:])
 
 # part 1
-com = findfirst(==("COM"), bodys)
-println(sum(length.(a_star.([orbits], [com], vertices(orbits)))))
+println(sum(length.(a_star.([g], [g["COM", :label]], vertices(g)))))
 
 # part 2
-you_orbiting = input[1, findfirst(==("YOU"), input[2,:])]
-san_orbiting = input[1, findfirst(==("SAN"), input[2,:])]
-length(a_star(
-    SimpleGraph(orbits), 
-    findfirst(==(you_orbiting), bodys), 
-    findfirst(==(san_orbiting), bodys)))
+println(length(a_star(g, getindex.([g], ["YOU", "SAN"], [:label])...))-2)
+
