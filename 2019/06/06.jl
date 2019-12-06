@@ -15,9 +15,13 @@ function MetaGraph(x::AbstractArray{<:Pair})
 	return g
 end
 
+# handle generators by collapsing into array first
+function MetaGraph(x::Base.Generator, args...; kwargs...) 
+	MetaGraph([x...], args...; kwargs...)
+end
+
 # build graph from pairs
-input = [Pair(split(line, ")")...) for line=readlines()]
-g = MetaGraph(input)
+g = MetaGraph(a => b for (a, b)=split.(readlines(), ")"))
 
 # part 1
 println(sum(length.(a_star(g, g["COM"], i) for i=vertices(g))))
