@@ -23,6 +23,7 @@ op!(c::Val{8}, m, i, params, si, so) = (m[m[i+3]] = params[1] == params[2]; i+4)
 # program execution
 run(m, si, so; i=0) = (while opcode(m, i) != 99; i = op!(m, i, si, so); end; so)
 
+# run part 1 & 2 inputs and print last stdout entries
 println(last(run(copy(memory), [1], [])))
 println(last(run(copy(memory), [5], [])))
 
