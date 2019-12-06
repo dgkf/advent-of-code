@@ -1,13 +1,10 @@
-# read memory from stdin
-memory = parse.(Int64, split(readlines()[1], ","))
+using OffsetArrays
 
-# create 0-indexed memory type
-struct MemoryArray; vec :: AbstractArray; end
-Base.getindex(m::MemoryArray, i) = get(m.vec, i .+ 1, 0)
-Base.setindex!(m::MemoryArray, val, i) = setindex!(m.vec, val, i .+ 1)
+# read memory from stdin
+memory = OffsetArray(parse.(Int64, split(readlines()[1], ",")), -1)
 
 # immediate and parameter mode memory reading with bounded indices
-mem_access(m, i, immediate) = immediate ? m[i] : m[m[i]]
+mem_access(m, i, immediate) = immediate ? get(m, i, 0) : get(m, m[i], 0)
 
 # define opcode behaviors
 opcode(m, i) = rem(m[i], 100)
@@ -23,17 +20,15 @@ op!(c::Val{7}, m, i, params) = (m[m[i+3]] = params[1] < params[2]; i+4)
 op!(c::Val{8}, m, i, params) = (m[m[i+3]] = params[1] == params[2]; i+4)
 
 # program execution
-exec(memory; idx = 0) = while opcode(memory, idx) != 99
-	idx = op!(memory, idx)
-end
+run(memory; i=0) = while opcode(memory, i) != 99; i = op!(memory, i); end
 
 # part 1
 op_stdin, op_stdout = [1], []
-exec(MemoryArray(copy(memory)))
+run(copy(memory))
 println(last(op_stdout))
 
 # part 2
 op_stdin, op_stdout = [5], []
-exec(MemoryArray(copy(memory)))
+run(copy(memory))
 println(last(op_stdout))
 
