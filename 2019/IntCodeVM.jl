@@ -27,6 +27,6 @@ op!(::Val{7}, m, i, params, si, so) = (m[m[i+3]] = params[1] < params[2]; i+4)
 op!(::Val{8}, m, i, params, si, so) = (m[m[i+3]] = params[1] == params[2]; i+4)
 
 # program execution
-exec_intcode!(m, si, so=[]; p=0) = while opcode(m,p) != 99; p = op!(m,p,si,so); end
+exec_intcode!(m,si,so=[];p=0) = while opcode(m,p) != 99; p = op!(m,p,si,so); end
 
 end
