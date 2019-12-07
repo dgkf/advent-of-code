@@ -31,7 +31,7 @@ function run_amps(m, init)
 	tasks = [@async(run!(copy(m), cs[i], cs[rem(i,n)+1])) for i=1:n]
 	put!.(cs, init) # initialize with respective amp init
 	put!(cs[1], 0)  # push 0 to first amp input
-	wait(tasks[1])  # wait for first amp to return final output
+	wait(tasks[1])  # wait for first amp to terminate
 	take!(cs[1])
 end
 
