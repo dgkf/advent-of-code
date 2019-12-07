@@ -14,40 +14,26 @@ params(m, i) = param.([m], i .+ (1:3), modes(m, i))
 op!(m, i, si, so) = op!(Val(opcode(m,i)), m, i, params(m, i), si, so)
 op!(c::Val{1}, m, i, params, si, so) = (m[m[i+3]] = params[1] + params[2]; i+4)
 op!(c::Val{2}, m, i, params, si, so) = (m[m[i+3]] = params[1] * params[2]; i+4)
-op!(c::Val{3}, m, i, params, si, so) = (m[m[i+1]] = popfirst!(si); i+2)
-op!(c::Val{4}, m, i, params, si, so) = (push!(so, params[1]); i+2)
+op!(c::Val{3}, m, i, params, si, so) = (m[m[i+1]] = take!(si); i+2)
+op!(c::Val{4}, m, i, params, si, so) = (put!(so, params[1]); i+2)
 op!(c::Val{5}, m, i, params, si, so) = (params[1] != 0 ? params[2] : i+3)
 op!(c::Val{6}, m, i, params, si, so) = (params[1] == 0 ? params[2] : i+3)
 op!(c::Val{7}, m, i, params, si, so) = (m[m[i+3]] = params[1] < params[2]; i+4)
 op!(c::Val{8}, m, i, params, si, so) = (m[m[i+3]] = params[1] == params[2]; i+4)
 
 # program execution
-function run(m, si, so=[]; p=0) 
-    while opcode(m, p) != 99
-        if opcode(m, p) == 3 && length(si) < 1; return (p, false); end
-        p = op!(m, p, si, so)
-    end
-    return (p, true)
-end
+run!(m, si, so=[]; p=0) = while opcode(m, p) != 99; p = op!(m, p, si, so); end; 
 
 # program execution with multiple processor feedback loop
-function run_feedback(m, n, si=repeat([[]], n); p=repeat([0], n))
-    ms = repeat([copy(m)], n)
-    term = repeat([false], n)
-    i = 1
-    while !all(term)
-        (p[i], term[i]) = run(ms[i], si[i], si[rem(i, n) + 1]; p=p[i])
-        i = rem(i, n) + 1
-    end
-    return last(si[i])
+function run_amps(m, init)
+	n = length(init)
+	cs = repeat([Channel{Int}(0)], n)
+	tasks = [@async(run!(copy(m), cs[i], cs[rem(i,n)+1])) for i=1:n]
+	put!.(cs, init)  # initialize with respective amp init
+	put!(cs[1], 0)   # push 0 to first amp input
+	take!(cs[1])     # await output on channel feeding amp 1
 end
 
-# part 1
-println(maximum(map(permutations(0:4)) do perm
-    run_feedback(memory, 5, [i == 1 ? [x, 0] : [x] for (i, x)=enumerate(perm)])
-end))
+println(maximum(run_amps.([memory], permutations(0:4))))
+println(maximum(run_amps.([memory], permutations(5:9))))
 
-# part 2
-println(maximum(map(permutations(5:9)) do perm
-    run_feedback(memory, 5, [i == 1 ? [x, 0] : [x] for (i, x)=enumerate(perm)])
-end))
