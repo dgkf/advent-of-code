@@ -1,9 +1,6 @@
 include("../IntCodeVM.jl")
-using Main.IntCodeVM
+using .IntCodeVM
 using Combinatorics
-
-# read memory from stdin
-code = intcode(stdin)
 
 # program execution with multiple processor feedback loop
 function run_amps(m, init)
@@ -16,6 +13,7 @@ function run_amps(m, init)
 	take!(cs[1])
 end
 
+code = intcode(stdin)
 println(maximum(run_amps.([code], permutations(0:4))))
 println(maximum(run_amps.([code], permutations(5:9))))
 
