@@ -27,38 +27,27 @@ function run(m, si, so=[]; p=0)
         if opcode(m, p) == 3 && length(si) < 1; return (p, false); end
         p = op!(m, p, si, so)
     end
-    (p, true)
+    return (p, true)
 end
 
 # program execution with multiple processor feedback loop
 function run_feedback(m, n, si=repeat([[]], n); p=repeat([0], n))
-    ms = [copy(m) for i=1:n]
+    ms = repeat([copy(m)], n)
     term = repeat([false], n)
     i = 1
     while !all(term)
-        (p[i], term[i]) = run(ms[i], si[i], si[rem(i,n)+1]; p=p[i])
-        i = rem(i,n)+1
+        (p[i], term[i]) = run(ms[i], si[i], si[rem(i, n) + 1]; p=p[i])
+        i = rem(i, n) + 1
     end
     return last(si[i])
 end
 
 # part 1
-max_signal = 0
-for stdins=permutations(0:4)
-    stdins = [[i] for i=stdins]
-    append!(stdins[1], 0)
-    global max_signal = max(max_signal, run_feedback(memory, 5, stdins))
-end
-
-println(max_signal)
-
+println(maximum(map(permutations(0:4)) do perm
+    run_feedback(memory, 5, [i == 1 ? [x, 0] : [x] for (i, x)=enumerate(perm)])
+end))
 
 # part 2
-max_signal = 0
-for stdins=permutations(5:9)
-    stdins = [[i] for i=stdins]
-    append!(stdins[1], 0)
-    global max_signal = max(max_signal, run_feedback(memory, 5, stdins))
-end
-
-println(max_signal)
+println(maximum(map(permutations(5:9)) do perm
+    run_feedback(memory, 5, [i == 1 ? [x, 0] : [x] for (i, x)=enumerate(perm)])
+end))
