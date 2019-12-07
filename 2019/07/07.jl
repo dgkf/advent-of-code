@@ -29,9 +29,10 @@ function run_amps(m, init)
 	n = length(init)
 	cs = repeat([Channel{Int}(0)], n)
 	tasks = [@async(run!(copy(m), cs[i], cs[rem(i,n)+1])) for i=1:n]
-	put!.(cs, init)  # initialize with respective amp init
-	put!(cs[1], 0)   # push 0 to first amp input
-	take!(cs[1])     # await output on channel feeding amp 1
+	put!.(cs, init) # initialize with respective amp init
+	put!(cs[1], 0)  # push 0 to first amp input
+	wait(tasks[1])  # wait for first amp to return final output
+	take!(cs[1])
 end
 
 println(maximum(run_amps.([memory], permutations(0:4))))
