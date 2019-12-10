@@ -12,9 +12,17 @@ end)
 println(n)
 
 t = map(astroids) do astroid
-    deg_dist = (atan((astroid.I .- astroids[i].I)...), -sqrt(sum((astroid.I .- astroids[i].I) .^ 2)), astroid.I...)
+    deg_dist = (atan((astroid.I .- astroids[i].I)...), -sqrt(sum((astroid.I .- astroids[i].I) .^ 2)), astroid.I)
 end
 
 out = sort(t, rev = true)
 
-ns = [x[1] for x=out]
+out_i = [o[1] for o=out]
+out_i = diff(out_i) .== 0
+out_i = reduce((a, b) -> [a..., b == 1 ? last(a) + 1 : 1], out_i, init = [out_i[1]])
+
+out_j = [(i, -o[1], o[2:end]...) for (o, i)=zip(out, out_i)]
+
+out_j = sort(out_j)
+
+println(sum([100, 1] .* out_j[200][4]))
