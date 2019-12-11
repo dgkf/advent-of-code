@@ -1,7 +1,8 @@
 using OffsetArrays
-using IterTools
+using Base.Iterators: flatten
+using IterTools: groupby
 
-input = readlines("./utils/cache/2019-10.txt")
+input = readlines()
 asteroids = reshape([i == '#' for i=join(input)], length(input), :)
 asteroids = findall(OffsetArray(asteroids, -1, -1) .== 1)
 
@@ -15,12 +16,12 @@ println(n)
 
 # part 2
 out = map(asteroids) do a
-    # angle                 # distance
+    # angle                 # distance                    # (x, y)
     (atan((a.I .- t.I)...), sqrt(sum((a.I .- t.I) .^ 2)), a.I)
 end
 
-out = sort(out, by = x -> (-x[1], x[2]))
-out = [Iterators.flatten(map(enumerate, groupby(x -> x[1], out)))...]
-out = sort(out, by = x -> (x[1], -x[2][1]))
+out = sort(out, by = x -> (-x[1], x[2])) # -angle, +distance
+out = [flatten(map(enumerate, groupby(x -> x[1], out)))...]
+out = sort(out, by = x -> (x[1], -x[2][1])) # +n, -angle
 println(sum([100, 1] .* out[200][2][3]))
 
