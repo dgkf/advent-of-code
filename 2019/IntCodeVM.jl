@@ -48,7 +48,6 @@ op!(::Val{9}, x, a, b, c, d) = (a+2, x.rb + x[b])
 
 # program execution
 tick!(x::IntCompState) = x.i, x.rb = op!(x)
-
 exec_intcode!(x::IntCompState) = while opcode(x) != 99; tick!(x); end
 
 end

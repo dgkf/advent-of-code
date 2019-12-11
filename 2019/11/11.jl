@@ -1,6 +1,7 @@
 include("../IntCodeVM.jl")
 using .IntCodeVM
 using OffsetArrays
+using Base.Iterators: flatten
 
 mutable struct PaintingRobot
     loc::AbstractArray{Int}
@@ -8,13 +9,13 @@ mutable struct PaintingRobot
     cpu::IntCompState
 end
                             
-turn_right!(x::PaintingRobot) = x.dir = [x.dir[2], -x.dir[1]]
-turn_left!(x::PaintingRobot) = x.dir = [-x.dir[2], x.dir[1]]
+turn!(x::PaintingRobot, cw::Bool=true) = turn!(x, (cw * 2) - 1)
+turn!(x::PaintingRobot, cw::Int=1) = x.dir = [cw * x.dir[2], -cw * x.dir[1]]
 
 function tick!(x::PaintingRobot, panels)
     push!(x.cpu.input, panels[x.loc...] < 1 ? 0 : 1)
     panels[x.loc...] = popfirst!(x.cpu.output)
-    popfirst!(x.cpu.output) == 0 ? turn_left!(x) : turn_right!(x)
+    turn!(x, popfirst!(x.cpu.output) == 1)
     x.loc .+= x.dir
 end
 
@@ -42,8 +43,12 @@ panels = OffsetArray(-ones(Int, 201, 201), -101, -101)
 panels[0, 0] = 1
 exec_robot!(robot, panels)
 
+# find and print text within bounds of painted area
+b = extrema(reshape(collect(flatten(Tuple.(findall(panels .==1 )))),2,:), dims=2)
 println.(mapslices(join, 
-    replace(panels[0:50, 0:-1:(-5)], -1 => " ", 0 => " ", 1 => "#"), 
+    replace(panels[reverse(UnitRange(b[1]...)), UnitRange(b[2]...)], 
+        0 => " ", 
+        1 => "#"), 
     dims = 1))
 
 
