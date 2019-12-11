@@ -1,28 +1,26 @@
 using OffsetArrays
+using IterTools
 
 input = readlines("./utils/cache/2019-10.txt")
-astroids = reshape([i == '#' for i=join(input)], length(input), :)
-astroids = findall(OffsetArray(astroids, -1, -1) .== 1)
+asteroids = reshape([i == '#' for i=join(input)], length(input), :)
+asteroids = findall(OffsetArray(asteroids, -1, -1) .== 1)
 
-(n, i) = findmax(map(astroids) do astroid
-    slopes = [(other.I[1] > astroid.I[1] , /((other.I .- astroid.I)...)) for other=astroids if other != astroid]
-    length(unique(slopes))
+# part 1
+(n, i) = findmax(map(asteroids) do a
+    length(unique([atan((a.I .- b.I)...) for b=asteroids if b != a]))
 end)
 
+t = asteroids[i]
 println(n)
 
-t = map(astroids) do astroid
-    deg_dist = (atan((astroid.I .- astroids[i].I)...), -sqrt(sum((astroid.I .- astroids[i].I) .^ 2)), astroid.I)
+# part 2
+out = map(asteroids) do a
+    # angle                 # distance
+    (atan((a.I .- t.I)...), sqrt(sum((a.I .- t.I) .^ 2)), a.I)
 end
 
-out = sort(t, rev = true)
+out = sort(out, by = x -> (-x[1], x[2]))
+out = [Iterators.flatten(map(enumerate, groupby(x -> x[1], out)))...]
+out = sort(out, by = x -> (x[1], -x[2][1]))
+println(sum([100, 1] .* out[200][2][3]))
 
-out_i = [o[1] for o=out]
-out_i = diff(out_i) .== 0
-out_i = reduce((a, b) -> [a..., b == 1 ? last(a) + 1 : 1], out_i, init = [out_i[1]])
-
-out_j = [(i, -o[1], o[2:end]...) for (o, i)=zip(out, out_i)]
-
-out_j = sort(out_j)
-
-println(sum([100, 1] .* out_j[200][4]))
