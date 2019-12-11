@@ -1,6 +1,6 @@
 module IntCodeVM
 
-export IntCompState, intcode, exec_intcode!
+export IntCompState, intcode, exec_intcode!, tick!, opcode
 
 using OffsetArrays
 import Base.setindex!, Base.getindex
