@@ -1,14 +1,12 @@
 include("../IntCodeVM.jl")
 using .IntCodeVM
 
-code = intcode()
+memory = intcode()
 
-si = [1]
-so = []
-exec_intcode!(copy(code), si, so)
-println(first(so))
+state = IntCompState(copy(memory), 0, 0, [1], [])
+exec_intcode!(state)
+println(first(state.output))
 
-si = [2]
-so = []
-exec_intcode!(copy(code), si, so)
-println(first(so))
+state = IntCompState(copy(memory), 0, 0, [2], [])
+exec_intcode!(state)
+println(first(state.output))
