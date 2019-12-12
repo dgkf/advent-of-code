@@ -21,24 +21,16 @@ pos = copy(orig_pos)
 orig_vel = zeros(Int, size(input))
 vel = copy(orig_vel)
 
-xs = Int[]
-ys = Int[]
-zs = Int[]
-
-for i=1:1e6
+i = 1
+repeat_i = [0, 0, 0]
+while any(repeat_i .== 0)
     vel .+= sum([(row' .> pos) - (row' .< pos) for row=eachslice(pos, dims=1)])
     pos .+= vel
-    if all(pos[:,1] .== orig_pos[:,1]) && all(vel[:,1] .== orig_vel[:,1])
-        push!(xs, i)
-    end
-    if all(pos[:,2] .== orig_pos[:,2]) && all(vel[:,2] .== orig_vel[:,2])
-        push!(ys, i)
-    end
-    if all(pos[:,3] .== orig_pos[:,3]) && all(vel[:,3] .== orig_vel[:,3])
-        push!(zs, i)
-    end
+    ax = (sum(pos .!= orig_pos, dims=1) .+ sum(vel .!= orig_vel, dims=1)) .== 0
+    if (any(ax)); global repeat_i[[((repeat_i .== 0) .& ax')...]] .= i; end
+    global i += 1
 end
 
-f = prod(first.(first.(getfield.(factor.([xs[1], ys[1], zs[1]]), :pe))))
-println(xs[1] * ys[1] * zs[1] ÷ f)
+# print least common multiple
+println(prod([f^p for (f,p)=reduce(merge, factor.([Dict], repeat_i))]))
 
