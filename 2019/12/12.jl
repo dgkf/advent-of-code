@@ -1,5 +1,3 @@
-using Primes
-
 input = parse.(Int, hcat(split.(readlines(), r"[^-0-9]+", keepempty=false)...))'
 
 # part 1
@@ -31,6 +29,5 @@ while any(repeat_i .== 0)
     global i += 1
 end
 
-# print least common multiple
-println(prod([f^p for (f,p)=merge(max, factor.([Dict], repeat_i)...)]))
+println(lcm(repeat_i))
 
