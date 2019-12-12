@@ -1,6 +1,6 @@
 using Primes
 
-input = reshape(parse.(Int, getfield.(eachmatch(r"-?\d+", join(readlines())), :match)), 3, :)'
+input = parse.(Int, hcat(split.(readlines(), r"[^-0-9]+", keepempty=false)...))'
 
 # part 1
 pos = copy(input)
@@ -32,5 +32,5 @@ while any(repeat_i .== 0)
 end
 
 # print least common multiple
-println(prod([f^p for (f,p)=reduce(merge, factor.([Dict], repeat_i))]))
+println(prod([f^p for (f,p)=merge(max, factor.([Dict], repeat_i)...)]))
 
