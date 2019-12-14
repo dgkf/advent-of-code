@@ -36,8 +36,8 @@ function render_display(display, x, score)
         2 => "B",
         3 => "=",
         4 => "O"))), "\n"))
-    println(join(div.([(0:size(display, 1))...], 10)))
-    println(join([(0:size(display, 1))...] .% 10))
+    println(join(div.([(0:(size(display, 1)) - 1)...], 10)))
+    println(join([(0:(size(display, 1) - 1))...] .% 10))
 
     flush(stdout)
 end
