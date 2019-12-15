@@ -1,16 +1,7 @@
 using MetaGraphs
 
+verbose = length(ARGS) && ARGS[1] == "--verbose"
 input = readlines("./utils/cache/2019-14.txt") 
-
-input = split("157 ORE => 5 NZVS
-165 ORE => 6 DCFZ
-44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL
-12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ
-179 ORE => 7 PSHF
-177 ORE => 5 HKGWZ
-7 DCFZ, 7 PSHF => 2 XJWVT
-165 ORE => 2 GPVTF
-3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT", "\n")
 
 # part 1
 compounds = sort(unique([c.match for lc=eachmatch.([r"[A-Z]+"], input) for c=lc]))
@@ -30,34 +21,57 @@ for line=input
     end
 end
 
-edges = Edge.(inneighbors(g, g["FUEL", :name]), [g["FUEL", :name]])
-set_prop!(g, g["FUEL", :name], :needed, 1)
+function calc_ore_to_make(graph, n=1)
+    g = copy(graph) 
+      edges = Edge.(inneighbors(g, g["FUEL", :name]), [g["FUEL", :name]])
+      set_prop!(g, g["FUEL", :name], :needed, n)
 
-while length(edges) > 0
-    edge = popfirst!(edges)
-    
-    if !(edge in keys(g.eprops)); continue; end
-    if length(outneighbors(g, edge.dst)) > 0
-        append!(edges, Edge.([edge.dst], outneighbors(g, edge.dst)))
-        continue
+    while length(edges) > 0
+        edge = popfirst!(edges)
+        
+        if length(outneighbors(g, edge.dst)) > get(g.vprops[edge.dst], :accounted, 0)
+            append!(edges, [edge])
+            continue
+        end
+
+        ep = g.eprops[edge]
+        src = g.vprops[edge.src]
+        dst = g.vprops[edge.dst]
+
+        if verbose
+            println("$(ep[:n_in]) $(src[:name]) -> $(ep[:n_out]) $(dst[:name]) ($(Int(dst[:needed])))")
+        end
+
+        set_prop!(g, edge.src, :accounted, 
+            get(g.vprops[edge.src], :accounted, 0) + 1)
+        set_prop!(g, edge.src, :needed, 
+            get(src, :needed, 0) + ep[:n_in] * ceil(dst[:needed] / ep[:n_out]))
+        set_prop!(g, edge.src, :excess, 
+            get(src, :excess, 0) + ep[:n_in] * (dst[:needed] % ep[:n_out]))
+
+        append!(edges, setdiff(Edge.(inneighbors(g, edge.src), [edge.src]), edges))
     end
-
-    ep = g.eprops[edge]
-    println("$(ep[:n_in]) $(g.vprops[edge.src][:name]) -> $(ep[:n_out]) $(g.vprops[edge.dst][:name]) ($(g.vprops[edge.dst][:needed]))")
-
-    set_prop!(g, edge.src, :needed, 
-        get(g.vprops[edge.src], :needed, 0) + 
-        ep[:n_in] * ceil(g.vprops[edge.dst][:needed] / ep[:n_out]))
-
-    set_prop!(g, edge.src, :excess, 
-        get(g.vprops[edge.src], :excess, 0) + 
-        ep[:n_in] * (g.vprops[edge.dst][:needed] % ep[:n_out]))
-    
-    append!(edges, Edge.(inneighbors(g, edge.src), [edge.src]))
-    rem_edge!(g, edge.src, edge.dst)
+    Int(g.vprops[g["ORE",:name]][:needed])
 end
 
-println(Int(g.vprops[g["ORE", :name]][:needed]))
+println(calc_ore_to_make(g, 1))
 
 
 # part 2
+search = [5e11, 1e12, 0]
+max_fuel = 0
+while (search[2] / 2^search[3]) > 0.5
+    ore_needed = calc_ore_to_make(g, search[1])
+    diff = search[2] / 2^search[3]
+    global max_fuel = Int(max(ore_needed > 1e12 ? 0 : search[1], max_fuel))
+    global search[1] += ore_needed > 1e12 ? -ceil(diff) : floor(diff)
+    if verbose
+        println(Int.(search))
+        println(ore_needed)
+        print("Max: "); println(max_fuel)
+    end
+    search[3] += 1
+end
+
+println(max_fuel)
+
