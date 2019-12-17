@@ -35,7 +35,7 @@ intcode(x::AbstractArray{<:Int}) = _intcode(x)
 intcode(x::OffsetArray{<:Int}) = x
 intcode(x::AbstractArray{<:AbstractString}) = _intcode(parse.(Int64, x))
 intcode(x::Union{String,IO}) = intcode(split(readlines(x)[1], ","))
-_intcode(x) = OffsetArray(vcat(x, zeros(Int, 1000)), -1)
+_intcode(x) = OffsetArray(vcat(x, zeros(Int, 5000)), -1)
 
 # opcode interpretation 
 opcode(x::IntCompState) = opcode(x.mem, x.i)
