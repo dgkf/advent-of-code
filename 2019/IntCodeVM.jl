@@ -11,10 +11,11 @@ mutable struct IntCompState
     rb::Int
     input
     output
+    time::Int
 end
 
 IntCompState(x; i=0, rb=0, input=Channel{Int}(Inf), output=Channel{Int}(Inf)) =
-    IntCompState(copy(intcode(x)), i, rb, input, output)
+    IntCompState(copy(intcode(x)), i, rb, input, output, 0)
 
 getindex(x::IntCompState, i, offset=0) = x.mem[i + offset]
 setindex!(x::IntCompState, val, i) = x.mem[i] = val
@@ -65,7 +66,7 @@ running(x::IntComp) = running(x.state)
 running(x::IntCompState) = opcode(x) != 99
 
 # program execution
-tick!(x::IntCompState) = x.i, x.rb = op!(x)
+tick!(x::IntCompState) = begin x.time += 1; x.i, x.rb = op!(x) end
 exec_intcode!(x::IntCompState) = while running(x); tick!(x); end
 
 end
