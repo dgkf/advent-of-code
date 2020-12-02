@@ -1,4 +1,3 @@
-
 raw_input = readlines()
 
 log_regex = r"(?<min>\d+)-(?<max>\d+) (?<l>\w): (?<pw>\w+)"
@@ -10,8 +9,8 @@ input = map(match.([log_regex], raw_input)) do i
 end
 
 # part 1
-println(sum([i[:min] <= count(l -> l == i[:l], i[:pw]) <= i[:max] for i in input]))
+println(sum(i[:min] <= count(==(i[:l]), i[:pw]) <= i[:max] for i = input))
 
 # part 2
-println(sum([(i[:pw][i[:min]] == i[:l]) ⊻ (i[:pw][i[:max]] == i[:l]) for i in input]))
+println(sum(xor(i[:pw][i[:min]] == i[:l], i[:pw][i[:max]] == i[:l]) for i in input))
 
