@@ -16,5 +16,5 @@ end
 println(sum(i.min ≤ count(==(i.l), i.pw) ≥ i.max for i = input))
 
 # part 2
-println(sum(xor(i.pw[i.min] == i.l, i.pw[i.max] == i.l) for i in input))
+println(sum(xor(i.pw[i.min] == i.l, i.pw[i.max] == i.l) for i = input))
 
