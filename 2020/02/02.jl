@@ -8,7 +8,7 @@ struct PasswordLog
 end
 
 log_regex = r"(?<min>\d+)-(?<max>\d+) (?<l>\w): (?<pw>\w+)"
-input = map(match.([log_regex], raw_input)) do i
+input = map(match.(log_regex, raw_input)) do i
     PasswordLog(parse(Int, i[:min]), parse(Int, i[:max]), i[:l][1], i[:pw])
 end
 
