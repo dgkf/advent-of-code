@@ -4,8 +4,8 @@ input = readlines()
 groups = split.(split(join(input, "\n"), "\n\n"), "\n")
 
 # part 1
-sum(map(group -> length(union(Set.(group)...)), groups))
+sum(length(union(Set.(group)...)) for group in groups)
 
 # part 2
-sum(map(group -> length(intersect(Set.(group)...)), groups))
+sum(length(intersect(Set.(group)...)) for group in groups)
 
