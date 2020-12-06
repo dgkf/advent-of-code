@@ -1,6 +1,6 @@
 input = readlines()
 
-# crate array of groups (arrays of strings)
+# create array of groups (arrays of strings)
 groups = split.(split(join(input, "\n"), "\n\n"), "\n")
 
 # part 1
