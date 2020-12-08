@@ -9,36 +9,35 @@ input = input[1:end-1]
 g = MetaDiGraph(SimpleDiGraph(), 0)
 set_indexing_prop!(g, :name)
 
-function add_vertex_if_missing!(g, idx, val)
-    if val ∉ keys(g[idx])
-        add_vertex!(g, :name, val)
-    end
-end
+# build graph
+maybe_add_vertex!(g, k, v) = val ∉ keys(g[k]) && add_vertex!(g, k, v)
 
-# part 1
 for i = input
-    add_vertex_if_missing!(g, :name, i[1])
+    maybe_add_vertex!(g, :name, i[1])
     for j = filter(i -> i isa RegexMatch, match.(r"^(\d+) (.*)$", i[2:end]))
-        add_vertex_if_missing!(g, :name, j[2])
+        maybe_add_vertex!(g, :name, j[2])
         add_edge!(g, g[i[1], :name], g[j[2], :name], :weight, parse(Int, j[1]))
     end
 end
 
-count(g.vprops) do (i, d)
-    d[:name] != "shiny gold" &&
-    has_path(g, g[d[:name], :name], g["shiny gold", :name])
-end |> println
+# part 1
+println(length(neighborhood(g, g["shiny gold", :name], nv(g); dir = :in)) - 1)
 
 # part 2
+bfs_path(g, v::Int) = bfs_paths(g, [v])
+function bfs_paths(g, vs::AbstractArray)
+
+end
+
 function enumerate_all_paths(g, v::AbstractArray)
-    vo = vcat.([v], outneighbors(g, last(v)))
+    vo = vcat.([v], setdiff(neighbors(g, last(v)), v))
     return(vcat([v], enumerate_all_paths.([g], vo)...))
 end
 
-function path_weights(g, p)
+function path_edge_weights(g, p)
     get_prop(g, src, dst, :weight) for (src, dst) = zip(p[1:end-1], p[2:end])
 end
 
 paths = enumerate_all_paths(g, [g["shiny gold", :name]])
-println(sum(prod.(filter(i -> length(i) > 0, path_weights.([g], paths)))))
+println(sum(prod.(filter(i -> length(i) > 0, path_edge_weights.([g], paths)))))
 
