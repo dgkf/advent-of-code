@@ -1,52 +1,33 @@
 input = readlines("utils/cache/2020/8/input.txt")
 input = map(input) do line
     inst, n = split(line, " ")
-    (inst, parse(Int, n))
+    (Symbol(inst), parse(Int, n))
 end
 
+exec_cmd(s::Symbol, n) = exec_cmd(Val(s), n)
+exec_cmd(::Val{:acc}, n) = [1, n]
+exec_cmd(::Val{:jmp}, n) = [n, 0]
+exec_cmd(::Val{:nop}, n) = [1, 0]
+
 function run(inst)
-    i = 1
-    acc = 0
+    mem = [1, 0]  # i, acc
     evaled = Set()
-
-    while i ∉ evaled && i <= length(inst)
-        cmd, n = inst[i]
-        evaled = union(evaled, i)
-        if cmd == "acc"
-            acc += n
-            i += 1
-        elseif cmd == "jmp"
-            i += n
-        elseif cmd == "nop"
-            i += 1
-        end
+    while mem[1] ∉ evaled && mem[1] <= length(inst)
+        evaled = union(evaled, mem[1])
+        mem += exec_cmd(inst[mem[1]]...)
     end
-
-    return (acc, i == length(inst) + 1)
+    return (mem[2], mem[1] > length(inst))
 end
 
 println(run(input)[1])
 
-for i = findall(first.(input) .== "nop")
+for (fixfrom, fixto) = [:nop => :jmp, :jmp => :nop], 
+    fixidx = findall(first.(input) .== fixfrom)
+
     new_input = deepcopy(input)
-    new_input[i] = ("jmp", input[i][2])
-    acc, term = run(new_input)
-
-    if term
-        println(acc)
-        break
-    end
-end
-
-for i = findall(first.(input) .== "jmp")
-    new_input = deepcopy(input)
-    new_input[i] = ("nop", input[i][2])
-    acc, term = run(new_input)
-
-    if term
-        println(acc)
-        break
-    end
+    new_input[fixidx] = (fixto, new_input[fixidx][2])
+    acc, success = run(new_input)
+    success && println(acc) isa Nothing && break
 end
 
 
