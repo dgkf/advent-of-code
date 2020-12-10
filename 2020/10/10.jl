@@ -12,11 +12,13 @@ function count_paths(x)
 end
 
 splitmap(f::Function, x; kwargs...) = splitmap(f.(x), x; kwargs...)
-splitmap(s::AbstractArray{Bool}, x; kwargs...) = splitmap(findall(s), x; kwargs...) 
+function splitmap(s::AbstractArray{Bool}, x; keep = true)
+    groups = cumsum(s)
+    !keep && groups[s] = missing 
+    splitmap(cumsum(s), x; kwargs...) 
+end
 function splitmap(s::AbstractArray{Int}, x; keep = true)
-    split_starts = vcat(1, s .+ (keep ? 0 : 1))
-    split_ends = vcat(s, length(x) + 1)
-    [x[i:j-1] for (i,j) = zip(split_starts, split_ends)]
+    [x[s .== i] for i = unique(s)]
 end
 
 sortinput = sort(input)
