@@ -1,5 +1,6 @@
 using BenchmarkTools
 using Memoize
+using Memoization
 
 input = sort(parse.(Int, readlines("utils/cache/2020/10/input.txt")))
 input = vcat([0], input, [maximum(input)+3])
@@ -47,10 +48,18 @@ end
 println(@btime count_paths_memoize(input))
 
 # part 2: solving using Memoize.jl
-@memoize Dict function count_paths_memoizejl(x)
+Memoize.@memoize Dict function count_paths_memoizejl(x)
     length(x) == 1 && return 1
     sum(count_paths_memoizejl(x[findfirst(==(j), x):end]) for j = x[1] .+ (1:3) if j ∈ x)
 end
 
 println(@btime count_paths_memoizejl(input))
+
+# part 2: solving using Memoization.jl
+Memoization.@memoize Dict function count_paths_memoizationjl(x)
+    length(x) == 1 && return 1
+    sum(count_paths_memoizationjl(x[findfirst(==(j), x):end]) for j = x[1] .+ (1:3) if j ∈ x)
+end
+
+println(@btime count_paths_memoizationjl(input))
 
