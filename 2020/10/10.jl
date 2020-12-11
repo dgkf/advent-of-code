@@ -1,4 +1,7 @@
-input = sort(parse.(Int, readlines()))
+using BenchmarkTools
+using Memoize
+
+input = sort(parse.(Int, readlines("utils/cache/2020/10/input.txt")))
 input = vcat([0], input, [maximum(input)+3])
 
 # part 1
@@ -23,23 +26,31 @@ function splitmap(s::AbstractArray{Bool}, x; keep = true)
     splitmap(cumsum(s), x; keep = keep) 
 end
 
-println(prod(map(count_paths, splitmap(vcat(false, diff(input) .== 3), input))))
+println(@btime prod(map(count_paths, splitmap(vcat(false, diff(input) .== 3), input))))
 
 # part 2: solving by memoising and brute force
 const trailing_x = Dict{Array{Int}, Int}()
-function count_paths(x)
+function count_paths_memoize(x)
     length(x) == 1 && return 1
     n = 0
     for j = x[1] .+ (1:3)
         if j ∈ x
             trailing_xi = x[findfirst(==(j), x):end]
             n += get!(trailing_x, trailing_xi) do
-                count_paths(trailing_xi)
+                count_paths_memoize(trailing_xi)
             end
         end
     end
     return n
 end
 
-println(count_paths(input))
+println(@btime count_paths_memoize(input))
+
+# part 2: solving using Memoize.jl
+@memoize Dict function count_paths_memoizejl(x)
+    length(x) == 1 && return 1
+    sum(count_paths_memoizejl(x[findfirst(==(j), x):end]) for j = x[1] .+ (1:3) if j ∈ x)
+end
+
+println(@btime count_paths_memoizejl(input))
 
