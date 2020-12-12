@@ -1,14 +1,15 @@
-input = readlines("utils/cache/2020/12/input.txt")
+input = readlines()
 
-right(x, n) = n == 0 ? x : right([-sign(n)*x[2],  sign(n)*x[1]], n-sign(n))
+right(x, n) = n == 0 ? x : right([-sign(n)*x[2], sign(n)*x[1]], n-sign(n))
+left(x, n) = right(x, -n)
 
 input = map(input) do i
     l = i[1]
     n = parse(Int, i[2:end])
 
     turn_to = 
-        l == 'R' ? x -> right(x, n / 90) :
-        l == 'L' ? x -> right(x, -n / 90) :
+        l == 'R' ? x -> right(x, (n / 90) % 4) :
+        l == 'L' ? x -> left(x, (n / 90) % 4) :
         identity
 
     move_along = 
