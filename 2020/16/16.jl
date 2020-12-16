@@ -1,8 +1,8 @@
 # parse input
 rule_re = r"([\w ]+): (\d+)-(\d+) or (\d+)-(\d+)"
 rules = map(split(readuntil(stdin, "\n\n"), "\n")) do line
-    rule = match(rule_re, line)
-    (rule[1], parse(Int, rule[2]):parse(Int, rule[3]), parse(Int, rule[4]):parse(Int, rule[5]))
+    m = match(rule_re, line)
+    (m[1], parse(Int, m[2]):parse(Int, m[3]), parse(Int, m[4]):parse(Int, m[5]))
 end
 
 myticket = parse.(Int, split(split(readuntil(stdin, "\n\n"), "\n")[2], ","))
@@ -43,8 +43,8 @@ knownruleidxs = Dict()
 while any(length.(values(ruleidxs)) .> 0)
     fixk, fixv = first((k, v) for (k, v) = ruleidxs if length(v) == 1)
     knownruleidxs[fixk] = only(fixv)
-    setindex!.([ruleidxs], [setdiff(v, fixv) for (k, v) = ruleidxs], keys(ruleidxs))
+    setindex!.([ruleidxs], setdiff.(values(ruleidxs), [fixv]), keys(ruleidxs))
 end
 
-println(prod([myticket[only(v)] for (k, v) in knownruleidxs if startswith(k, "departure")]))
+println(prod([myticket[v] for (k, v) in knownruleidxs if startswith(k, "departure")]))
 
