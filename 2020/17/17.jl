@@ -33,6 +33,6 @@ function simulate(input, cycles)
     return(state)
 end
 
-println(sum(simulate(input3d, 1)))
+println(sum(simulate(input3d, 6)))
 println(sum(simulate(input4d, 6)))
 
