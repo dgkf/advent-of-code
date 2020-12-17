@@ -7,9 +7,16 @@ input3d = reshape(input, size(input)..., 1)
 input4d = reshape(input, size(input)..., 1, 1)
 
 function simulate(input, cycles)
-    state = zeros(Bool, (size(input) .+ [cycles * 2])...)
-    state[UnitRange.(cycles + 1, cycles .+ size(input))...] .= input
+    # build our state matrix
+    state_size = size(input) .+ (cycles * 2)
+    state_input_block = UnitRange.(cycles + 1, cycles .+ size(input))
+    state = zeros(Bool, state_size)
+    state[state_input_block...] .= input
+
+    # set up our adjacenct offsets
     adj = CartesianIndices((repeat([-1:1], length(size(input)))...,))
+
+    # iterate through cycles, updating state
     state_next = deepcopy(state)
     for cycle in 1:cycles
         for coord in CartesianIndices(state)
@@ -22,9 +29,10 @@ function simulate(input, cycles)
         end
         state .= state_next
     end
+
     return(state)
 end
 
-println(sum(simulate(input3d, 6)))
+println(sum(simulate(input3d, 1)))
 println(sum(simulate(input4d, 6)))
 
