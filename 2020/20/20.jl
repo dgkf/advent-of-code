@@ -36,11 +36,9 @@ end
 corners = Dict()
 for (id, tile) in tiles
     tileedges = collect(values(getedges(tile)))
-    othertiledges = vcat([[collect(values(getedges(v))); reverse.(collect(values(getedges(v))))] for (k, v) = tiles if k != id]...)
-    edgematches = tileedges .∈ [othertiledges]
-    if sum(edgematches) == 2
-        corners[id] = (tile, edgematches)
-    end
+    othertileedges = vcat([collect(values(getedges(v))) for (k, v) = tiles if k != id]...)
+    edgematches = tileedges .∈ [[othertileedges; reverse.(othertileedges)]]
+    sum(edgematches) == 2 && (corners[id] = (tile, edgematches))
 end
 
 println(prod(keys(corners)))
@@ -62,7 +60,7 @@ cornercoord = 1 .+ (size(puzzletiles) .- 1) .* (corneredges[[1,4]] .- corneredge
 puzzletiles[CartesianIndex(cornercoord...)] = (pop!(tiles, cornerid),)
 
 # create a Dict of offsets to use for querying neighboring tiles
-puzzletileoffsets = Dict(
+dirs = Dict(
     :l => CartesianIndex( 0, -1),
     :r => CartesianIndex( 0,  1),
     :b => CartesianIndex( 1,  0),
@@ -71,18 +69,21 @@ puzzletileoffsets = Dict(
 # loop through unfilled tiles, slotting in tiles when we can
 while length(tiles) > 0
     for puzzletilecoord = findall(puzzletiles .== nothing)
+
         # populate known adjacent edges
         adjedges = Dict{Symbol,Any}(:l => nothing, :r => nothing, :t => nothing, :b => nothing)
-        puzzlel = get(puzzletiles, puzzletilecoord + puzzletileoffsets[:l], nothing)
+        puzzlel = get(puzzletiles, puzzletilecoord + dirs[:l], nothing)
         !(puzzlel isa Nothing) && (adjedges[:l] = getedges(only(puzzlel))[:r])
-        puzzler = get(puzzletiles, puzzletilecoord + puzzletileoffsets[:r], nothing)
+        puzzler = get(puzzletiles, puzzletilecoord + dirs[:r], nothing)
         !(puzzler isa Nothing) && (adjedges[:r] = getedges(only(puzzler))[:l])
-        puzzlet = get(puzzletiles, puzzletilecoord + puzzletileoffsets[:t], nothing)
+        puzzlet = get(puzzletiles, puzzletilecoord + dirs[:t], nothing)
         !(puzzlet isa Nothing) && (adjedges[:t] = getedges(only(puzzlet))[:b])
-        puzzleb = get(puzzletiles, puzzletilecoord + puzzletileoffsets[:b], nothing)
+        puzzleb = get(puzzletiles, puzzletilecoord + dirs[:b], nothing)
         !(puzzleb isa Nothing) && (adjedges[:b] = getedges(only(puzzleb))[:t])
+
         # break if we have no edge requirements
         all(values(adjedges) .== nothing) && continue
+
         # find tile that could fit
         tileadded = false
         for (idx, tile) = tiles, rot = 0:3, flip = [true, false] 
@@ -111,6 +112,7 @@ for c = CartesianIndices(puzzletiles)
     puzzlegrid[xrange,yrange] .= only(puzzletiles[c])[2:end-1,2:end-1]
 end
 
+# scan through matrix rotations an flips looking for seamonsters
 xmax, ymax = size(puzzlegrid) .- size(seamonster)
 scanx, scany = UnitRange.(1, size(seamonster))
 for rot = 0:3, flip = [true, false]
