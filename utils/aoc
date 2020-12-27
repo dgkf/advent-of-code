@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# example: sh aoc-input.sh 2019 2
+# example: ./aoc 2019 2
 
 day=$(echo $2 | sed -e 's:^0*::')
 cachefile="$(dirname "$0")/cache/$1/$day/input.txt"
