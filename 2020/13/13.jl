@@ -7,7 +7,7 @@ bus_n = filter(!=(-1), schedule)
 bus_dt = (1:length(schedule))[schedule .!= -1] .- 1
 
 # part 1
-min_rem_i, min_rem = findmin(bus_n .- n .% bus_n)
+min_rem, min_rem_i = findmin(bus_n .- n .% bus_n)
 println(bus_n[min_rem_i] * min_rem)
 
 # part 2
