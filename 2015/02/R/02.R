@@ -10,7 +10,7 @@ paper <- function(x, y, z) {
 }
 
 # vectorized version
-paper <- function(arr) {
+total_paper <- function(arr) {
   side1 <- arr[,1] * arr[,2]
   side2 <- arr[,2] * arr[,3]
   side3 <- arr[,1] * arr[,3]
@@ -25,17 +25,27 @@ ribbon <- function(x, y, z) {
 }
 
 # vectorized version
-ribbon <- function(arr) {
+total_ribbon <- function(arr) {
   around <- 2 * (arr[,1] + arr[,2] + arr[,3] - pmax(arr[,1], arr[,2], arr[,3]))
   bow <- arr[,1] * arr[,2] * arr[,3]
   sum(around + bow)
 }
 
-print(microbenchmark::microbenchmark(
-  "#1" = paper(presents),
-  "#2" = ribbon(presents)
-))
 
-cat(paper(presents), "\n")
-cat(ribbon(presents), "\n")
+cat("Element-wise:\n")
+print(microbenchmark::microbenchmark(
+  "#1" = sum(apply(presents, 1L, function(r) do.call(paper, as.list(r)))),
+  "#2" = sum(apply(presents, 1L, function(r) do.call(ribbon, as.list(r))))
+))
+cat("\n")
+
+cat("Vectorized:\n")
+print(microbenchmark::microbenchmark(
+  "#1" = total_paper(presents),
+  "#2" = total_ribbon(presents)
+))
+cat("\n")
+
+cat(total_paper(presents), "\n")
+cat(total_ribbon(presents), "\n")
 
