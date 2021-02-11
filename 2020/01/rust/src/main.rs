@@ -11,13 +11,12 @@ fn parse_input() -> std::vec::Vec<u32> {
 }
 
 fn prod_of_n_which_sum_to_2020(values: &Vec<u32>, n: usize) -> u32 {
-    values
-        .iter()
-        .permutations(n)
-        .filter(|p| p.iter().fold(0, |acc, &x| acc + x) == 2020)
-        .map(|p| p.iter().fold(1, |acc, &x| acc * x))
-        .next()
-        .unwrap()
+    for p in values.iter().permutations(n) {
+        if p.into_iter().sum::<u32>() == 2020 {
+            return &p.into_iter().product::<u32>()
+        }
+    }
+    return 0
 }
 
 fn main() {
