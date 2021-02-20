@@ -49,11 +49,11 @@ criteriaB s = and [hasPairTwice s, hasRepeatWithSpace s]
 
 -- Part B criteria
 hasRepeatWithSpace :: [Char] -> Bool
-hasRepeatWithSpace s = any (==True) (zipWith (==) (init (init s)) (tail (tail s)))
+hasRepeatWithSpace s = any (==True) (zipWith (==) (init (init s)) (drop 2 s))
 
 hasPairTwice :: [Char] -> Bool
 hasPairTwice s 
-  | length(s) > 2 = containsSubstring (tail (tail s)) (take 2 s) || hasPairTwice (tail s)
+  | length(s) > 2 = containsSubstring (drop 2 s) (take 2 s) || hasPairTwice (tail s)
   | otherwise = False
 
 containsSubstring :: String -> String -> Bool
