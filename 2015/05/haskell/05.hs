@@ -56,12 +56,6 @@ hasPairTwice s
   | length(s) > 2 = containsSubstring (tail (tail s)) (take 2 s) || hasPairTwice (tail s)
   | otherwise = False
 
-findPairTwice :: String -> Maybe String
-findPairTwice s
-  | length(s) > 2 && containsSubstring (tail (tail s)) (take 2 s) = Just (take 2 s)
-  | length(s) > 2 = findPairTwice (tail s)
-  | otherwise = Nothing
-
 containsSubstring :: String -> String -> Bool
 containsSubstring s sub
   | length(s) >= length(sub) = (take (length sub) s) == sub || containsSubstring (tail s) sub
