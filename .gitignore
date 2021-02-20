@@ -2,5 +2,6 @@
 **data*
 **secret*
 utils/cache
+**/target
 **.swp
 **.swo
