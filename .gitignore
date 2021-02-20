@@ -2,6 +2,14 @@
 **data*
 **secret*
 utils/cache
-**/target
+
+# vim
 **.swp
 **.swo
+
+# rust
+**/target
+
+# haskell
+**.hi
+**.o
