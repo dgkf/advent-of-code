@@ -3,8 +3,14 @@
 :- use_module(library(clpfd)).  % for bi-directional equality 
 
 main :- 
-  read_line_to_string(user_input, Input),
-  next_valid_passcode(Input, PartA)
+  % read_line_to_string(user_input, Input),
+  passcode("hepxcrrq", InputCode),
+  next_valid_passcode(InputCode, PartACode),
+  password(PartACode, PartA),
+  format("~s ~n", PartA),
+  next_valid_passcode(PartACode, PartBCode),
+  password(PartBCode, PartB),
+  format("~s ~n", PartB).
 
 rule_three_increasing([]) :- false.
 rule_three_increasing([_|T]) :- rule_three_increasing(T).
