@@ -5,12 +5,12 @@
 
 main :- 
   read_line_to_string(user_input, Input),
-  passcode(Input, InputCode), 
+  password(Input, InputCode),
   next_valid_passcode(InputCode, PartACode),
-  passcode(PartAAscii, PartACode), atom_codes(PartA, PartAAscii),
+  password(PartA, PartACode),
   format("~n~s~n", PartA), 
   next_valid_passcode(PartACode, PartBCode),
-  passcode(PartBAscii, PartBCode), atom_codes(PartB, PartBAscii),
+  password(PartB, PartBCode),
   format("~s~n", PartB),
   halt.
 
@@ -20,7 +20,7 @@ rule_three_increasing([A,B,C|_]) :- B is A + 1, C is B + 1.
 
 rule_no_ambiguous([]) :- true.
 rule_no_ambiguous([H|T]) :-
-  passcode("iol", Forbid), 
+  password("iol", Forbid), 
   not(member(H, Forbid)),
   rule_no_ambiguous(T).
 
@@ -36,7 +36,8 @@ is_valid(Pc) :-
   rule_no_ambiguous(Pc), 
   rule_n_doubles(Pc, 2).
 
-passcode(Pw, Pc) :- string(Pw), atom_codes(Pw, X), passcode(X, Pc).
+password(Pw, Pc) :- nonvar(Pw), string_to_list(Pw, X), passcode(X, Pc).
+password(Pw, Pc) :- nonvar(Pc), passcode(X, Pc), string_to_list(Pw, X).
 passcode([H|T], [PcH|PcT]) :- PcH #= H - 97, passcode(T, PcT).
 passcode([], []).
 
