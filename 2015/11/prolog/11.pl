@@ -7,10 +7,10 @@ main :-
   read_line_to_string(user_input, Input),
   passcode(Input, InputCode), 
   next_valid_passcode(InputCode, PartACode),
-  password(PartACode, PartA),
+  passcode(PartAAscii, PartACode), atom_codes(PartA, PartAAscii),
   format("~n~s~n", PartA), 
   next_valid_passcode(PartACode, PartBCode),
-  password(PartBCode, PartB),
+  passcode(PartBAscii, PartBCode), atom_codes(PartB, PartBAscii),
   format("~s~n", PartB),
   halt.
 
@@ -22,23 +22,21 @@ rule_three_increasing([A,B,C|_]) :-
 
 rule_no_ambiguous([]) :- true.
 rule_no_ambiguous([H|T]) :-
-  atom_codes("i", [Icode]), not(H #= Icode - 97),
-  atom_codes("o", [Ocode]), not(H #= Ocode - 97),
-  atom_codes("l", [Lcode]), not(H #= Lcode - 97),
+  passcode("iol", Forbid), 
+  not(member(H, Forbid)),
   rule_no_ambiguous(T).
 
 rule_n_doubles(X, N) :- rule_n_doubles(X, N, []).
 rule_n_doubles(_, 0, _).
+rule_n_doubles([_,B|T], N, Letters) :- rule_n_doubles([B|T], N, Letters).
 rule_n_doubles([A,B|T], N, Letters) :- 
-  A is B, not(member(A, Letters)), Nm is N - 1, rule_n_doubles(T, Nm, [A|Letters]);
-  rule_n_doubles([B|T], N, Letters).
+  A is B, not(member(A, Letters)), Nm is N - 1, 
+  rule_n_doubles(T, Nm, [A|Letters]).
 
 is_valid(Pc) :- 
   rule_three_increasing(Pc), 
   rule_no_ambiguous(Pc), 
   rule_n_doubles(Pc, 2).
-
-password(Pc, Pw) :- passcode(X, Pc), atom_codes(Pw, X).
 
 passcode(Pw, Pc) :- string(Pw), atom_codes(Pw, X), passcode(X, Pc).
 passcode([H|T], [PcH|PcT]) :- PcH #= H - 97, passcode(T, PcT).
