@@ -1,16 +1,18 @@
 % advent of code 2015, day 11
 :- initialization main.
+:- use_module(library(readutil)).
 :- use_module(library(clpfd)).  % for bi-directional equality 
 
 main :- 
-  % read_line_to_string(user_input, Input),
-  passcode("hepxcrrq", InputCode),
-  next_valid_passcode(InputCode, PartACode),
-  password(PartACode, PartA),
-  format("~s ~n", PartA),
-  next_valid_passcode(PartACode, PartBCode),
-  password(PartBCode, PartB),
-  format("~s ~n", PartB).
+  read_line_to_string(user_input, Input),
+  passcode(Input, InputCode), !, 
+  next_valid_passcode(InputCode, PartACode), !, 
+  password(PartACode, PartA), !, 
+  format("~n~s~n", PartA), !, 
+  next_valid_passcode(PartACode, PartBCode), !, 
+  password(PartBCode, PartB), !, 
+  format("~s~n", PartB), !,
+  halt.
 
 rule_three_increasing([]) :- false.
 rule_three_increasing([_|T]) :- rule_three_increasing(T).
@@ -47,17 +49,8 @@ next_passcode([PcA,PcB|PcT], [A,B|T]) :-
   next_passcode([PcB|PcT], [B|T]),
   ((PcB is 25, B is 0) -> A is (PcA + 1) rem 26; A is PcA).
 
-next_valid_passcode(Pw, Next) :- 
-  string(Pw), 
-  atom_codes(Pw, Pc),
-  next_valid_passcode(Pc, Nc),
-  passcode(Nw, Nc),
-  atom_codes(Next, Nw).
-  
 next_valid_passcode(Pc, Next) :- 
-  next_passcode(Pc, Next), 
-  is_valid(Next).
+  next_passcode(Pc, Next), is_valid(Next).
 next_valid_passcode(Pc, Next) :-
-  next_passcode(Pc, X), 
-  next_valid_passcode(X, Next).
+  next_passcode(Pc, X), !, next_valid_passcode(X, Next).
 
