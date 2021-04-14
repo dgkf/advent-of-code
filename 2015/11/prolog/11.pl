@@ -16,9 +16,7 @@ main :-
 
 rule_three_increasing([]) :- false.
 rule_three_increasing([_|T]) :- rule_three_increasing(T).
-rule_three_increasing([A,B,C|_]) :-
-  B is A + 1,
-  C is B + 1.
+rule_three_increasing([A,B,C|_]) :- B is A + 1, C is B + 1.
 
 rule_no_ambiguous([]) :- true.
 rule_no_ambiguous([H|T]) :-
@@ -47,8 +45,5 @@ next_passcode([PcA,PcB|PcT], [A,B|T]) :-
   next_passcode([PcB|PcT], [B|T]),
   ((PcB is 25, B is 0) -> A is (PcA + 1) rem 26; A is PcA).
 
-next_valid_passcode(Pc, Next) :- 
-  next_passcode(Pc, Next), is_valid(Next).
-next_valid_passcode(Pc, Next) :-
-  next_passcode(Pc, X), !, next_valid_passcode(X, Next).
-
+next_valid_passcode(Pc, Next) :- next_passcode(Pc, Next), is_valid(Next).
+next_valid_passcode(Pc, Next) :- next_passcode(Pc, X), !, next_valid_passcode(X, Next).
