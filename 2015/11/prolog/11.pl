@@ -5,13 +5,13 @@
 
 main :- 
   read_line_to_string(user_input, Input),
-  passcode(Input, InputCode), !, 
-  next_valid_passcode(InputCode, PartACode), !, 
-  password(PartACode, PartA), !, 
-  format("~n~s~n", PartA), !, 
-  next_valid_passcode(PartACode, PartBCode), !, 
-  password(PartBCode, PartB), !, 
-  format("~s~n", PartB), !,
+  passcode(Input, InputCode), 
+  next_valid_passcode(InputCode, PartACode),
+  password(PartACode, PartA),
+  format("~n~s~n", PartA), 
+  next_valid_passcode(PartACode, PartBCode),
+  password(PartBCode, PartB),
+  format("~s~n", PartB),
   halt.
 
 rule_three_increasing([]) :- false.
