@@ -10,16 +10,18 @@ fn parse_input() -> Vec<u32> {
 }
 
 fn count_increasing(values: &Vec<u32>) -> u32 {
-    values.iter().fold(vec![0, 10000], |acc, &r| {
-      vec![acc[0] + u32::from(r > acc[1]), r]
-    })[0]
+    values.iter()
+        .enumerate()
+        .take(values.len() - 1)
+        .map(|(i, val)| u32::from(val < &values[i + 1]))
+        .sum()
 }
 
 fn sliding_window(values: &Vec<u32>) -> Vec<u32> {
     values.iter()
         .enumerate()
         .take(values.len() - 2)
-        .map(|i| i.1 + values[i.0+1] + values[i.0+2])
+        .map(|(i, val)| val + values[i + 1] + values[i + 2])
         .collect()
 }
 
