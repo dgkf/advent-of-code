@@ -18,13 +18,13 @@ session=<96 character session token>
 On a \*nix system you can use a `sh` to run `./aoc-input.sh`
 
 ```sh
-sh ./aoc-input.sh 2019 1
+./aoc 2019 1
 ```
 
 On a Windows system, use powershell to run `./aoc-input.ps1`
 
 ```powershell
-./aoc-input.ps1 2019 1
+./aoc.ps1 2019 1
 ```
 
 ## Piping output
