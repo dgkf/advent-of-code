@@ -33,6 +33,6 @@ Naturally, you can pipe output into a julia script as *stdin*, which each of
 the solutions expects.
 
 ```sh
-sh utils/aoc-input.sh 2019 1 | julia 2019/01/01.jl
+utils/aoc 2019 1 | julia 2019/01/01.jl
 ```
 
