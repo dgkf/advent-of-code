@@ -18,13 +18,13 @@ session=<96 character session token>
 On a \*nix system you can use a `sh` to run `./aoc-input.sh`
 
 ```sh
-sh ./aoc-input.sh 2019 1
+./aoc 2019 1
 ```
 
 On a Windows system, use powershell to run `./aoc-input.ps1`
 
 ```powershell
-./aoc-input.ps1 2019 1
+./aoc.ps1 2019 1
 ```
 
 ## Piping output
@@ -33,6 +33,6 @@ Naturally, you can pipe output into a julia script as *stdin*, which each of
 the solutions expects.
 
 ```sh
-sh utils/aoc-input.sh 2019 1 | julia 2019/01/01.jl
+utils/aoc 2019 1 | julia 2019/01/01.jl
 ```
 
