@@ -1,12 +1,15 @@
 use std::io::BufRead;
 use std::str::FromStr;
+use strum_macros::Display;
+use strum_macros::EnumString;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq, EnumString, Display)]
+#[strum(serialize_all = "lowercase")]
 enum Direction {
     Up,
     Forward,
     Down,
-    Backward
+    Backward,
 }
 
 #[derive(Debug, PartialEq)]
@@ -16,20 +19,12 @@ struct Movement {
 }
 
 impl FromStr for Movement {
-    type Err = std::num::ParseIntError;
-
+    type Err = Box<dyn std::error::Error>;
     fn from_str(line: &str) -> Result<Self, Self::Err> {
         let mut strs = line.split(" ");
-        let dir: Direction = match strs.next() {
-            Some("up")       => Some(Direction::Up),
-            Some("forward")  => Some(Direction::Forward),
-            Some("down")     => Some(Direction::Down),
-            Some("backward") => Some(Direction::Backward),
-            _                => None
-        }.unwrap();
-
-        let x: i32 = strs.next().unwrap().parse().unwrap();
-        Ok(Movement { dir, x })
+        let dir: Direction = strs.next().unwrap().parse()?;
+        let x: i32         = strs.next().unwrap().parse()?;
+        Ok(Movement{ dir, x })
     }
 }
 
