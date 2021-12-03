@@ -10,7 +10,7 @@ fn parse_input() -> Vec<Vec<bool>> {
 }
 
 fn power_consumption(data: &Vec<Vec<bool>>) -> u32 {
-    let data_len_half: u32 = (data.len() as u32) / 2;
+    let data_len: u32 = data.len() as u32;
     let mut gamma: u32 = 0;
     let mut epsilon: u32 = 0;
 
@@ -20,7 +20,7 @@ fn power_consumption(data: &Vec<Vec<bool>>) -> u32 {
 
     loop {
         bit_n = data.iter().map(|row| row[bit] as u32).sum();
-        if bit_n > data_len_half { gamma += bit_val } 
+        if bit_n * 2 > data_len { gamma += bit_val } 
         else { epsilon += bit_val }
 
         if bit == 0 { break }
