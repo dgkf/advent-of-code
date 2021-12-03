@@ -5,7 +5,7 @@ fn parse_input() -> Vec<Vec<bool>> {
         .lock()
         .lines()
         .filter_map(|s| s.ok())
-        .filter_map(|s| Some(s.chars().map(|c| c == '1').collect()))
+        .map(|s| s.chars().map(|c| c == '1').collect())
         .collect()
 }
 
