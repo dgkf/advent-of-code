@@ -1,4 +1,5 @@
 use std::io::BufRead;
+use std::time::Instant;
 
 fn parse_input() -> Vec<Vec<bool>> {
     std::io::stdin()
@@ -60,9 +61,11 @@ fn rating(data: &Vec<Vec<bool>>, cmp: fn(u32, u32) -> bool) -> u32 {
         }
 
         // count most common bit
-        bit_n = data.iter().enumerate()
-            .map(|(i, row)| (mask[i] && row[bit]) as u32)
-            .sum();
+        bit_n = 0;
+        for (i, row) in data.iter().enumerate() {
+            if !mask[i] { continue }
+            if row[bit] { bit_n += 1 }
+        }
 
         // apply next mask
         for (i, row) in data.iter().enumerate() {
@@ -87,7 +90,9 @@ fn life_support_rating(data: &Vec<Vec<bool>>) -> u32 {
 }
 
 fn main() {
+    let now = Instant::now();
     let data = parse_input();
     println!("{:?}", power_consumption(&data));
     println!("{:?}", life_support_rating(&data));
+    println!("Elapsed: {:?}", now.elapsed());
 }
