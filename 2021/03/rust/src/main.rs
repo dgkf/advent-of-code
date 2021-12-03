@@ -9,7 +9,7 @@ fn parse_input() -> Vec<Vec<bool>> {
         .collect()
 }
 
-fn calc_power_consumption(data: &Vec<Vec<bool>>) -> u32 {
+fn power_consumption(data: &Vec<Vec<bool>>) -> u32 {
     let data_len_half: u32 = (data.len() as u32) / 2;
     let mut gamma: u32 = 0;
     let mut epsilon: u32 = 0;
@@ -53,7 +53,7 @@ fn bool_vec_to_value(data: &Vec<bool>) -> u32 {
     return value
 }
 
-fn calc_rating(data: &Vec<Vec<bool>>, cmp: &dyn Fn(u32, u32) -> bool) -> u32 {
+fn rating(data: &Vec<Vec<bool>>, cmp: &dyn Fn(u32, u32) -> bool) -> u32 {
     let mut bit: usize = 0;
     let mut mask: Vec<bool> = data.iter().map(|_| true).collect();
     let mut mask_n: u32;
@@ -81,22 +81,20 @@ fn calc_rating(data: &Vec<Vec<bool>>, cmp: &dyn Fn(u32, u32) -> bool) -> u32 {
     }
 }
 
-fn calc_oxygen_rating(data: &Vec<Vec<bool>>) -> u32 {
-    calc_rating(&data, &|bit_count, mask_count_half| bit_count >= mask_count_half)
+fn oxygen_rating(data: &Vec<Vec<bool>>) -> u32 {
+    rating(&data, &|bit_count, mask_count_half| bit_count >= mask_count_half)
 }
 
-fn calc_co2_rating(data: &Vec<Vec<bool>>) -> u32 {
-    calc_rating(&data, &|bit_count, mask_count_half| bit_count < mask_count_half)
+fn co2_rating(data: &Vec<Vec<bool>>) -> u32 {
+    rating(&data, &|bit_count, mask_count_half| bit_count < mask_count_half)
 }
 
-fn calc_life_support_rating(data: &Vec<Vec<bool>>) -> u32 {
-    let oxy_rating = calc_oxygen_rating(&data);
-    let co2_rating = calc_co2_rating(&data);
-    return oxy_rating * co2_rating;
+fn life_support_rating(data: &Vec<Vec<bool>>) -> u32 {
+    oxygen_rating(&data) * co2_rating(&data)
 }
 
 fn main() {
     let data = parse_input();
-    println!("{:?}", calc_power_consumption(&data));
-    println!("{:?}", calc_life_support_rating(&data));
+    println!("{:?}", power_consumption(&data));
+    println!("{:?}", life_support_rating(&data));
 }
