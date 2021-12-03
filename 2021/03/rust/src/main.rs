@@ -1,0 +1,102 @@
+use std::io::BufRead;
+
+fn parse_input() -> Vec<Vec<bool>> {
+    std::io::stdin()
+        .lock()
+        .lines()
+        .filter_map(|s| s.ok())
+        .filter_map(|s| Some(s.chars().map(|c| c == '1').collect()))
+        .collect()
+}
+
+fn calc_power_consumption(data: &Vec<Vec<bool>>) -> u32 {
+    let data_len_half: u32 = (data.len() as u32) / 2;
+    let mut gamma: u32 = 0;
+    let mut epsilon: u32 = 0;
+
+    let mut bit: usize = &data[0].len() - 1;
+    let mut bit_val: u32 = 1;
+    let mut bit_n: u32;
+
+    loop {
+        bit_n = 0;
+        for row in data.iter() {
+            if row[bit] { bit_n += 1 };
+        }
+
+        if bit_n > data_len_half { 
+            gamma += bit_val;
+        } else {
+            epsilon += bit_val;
+        }
+
+        if bit == 0 { break }
+        bit -= 1;
+        bit_val *= 2;
+    }
+
+    gamma * epsilon
+}
+
+fn bool_vec_to_value(data: &Vec<bool>) -> u32 {
+    let mut value: u32 = 0;
+    let mut bit: usize = &data.len() - 1;
+    let mut bit_val: u32 = 1;
+
+    loop {
+        if data[bit] { value += bit_val };
+        if bit == 0 { break }
+        bit -= 1;
+        bit_val *= 2;
+    }
+
+    return value
+}
+
+fn calc_rating(data: &Vec<Vec<bool>>, cmp: &dyn Fn(u32, u32) -> bool) -> u32 {
+    let mut bit: usize = 0;
+    let mut mask: Vec<bool> = data.iter().map(|_| true).collect();
+    let mut mask_n: u32;
+    let mut bit_n: u32;
+
+    // find position of oxygen generator rating
+    loop {
+        mask_n = mask.iter().filter(|i| **i).count() as u32;
+
+        // count most common bit
+        bit_n = 0;
+        for (i, row) in data.iter().enumerate() {
+            if !mask[i] { continue }
+            if mask_n <= 1 { return bool_vec_to_value(&row) };
+            if row[bit] { bit_n += 1 }
+        }
+
+        // apply next mask
+        for (i, row) in data.iter().enumerate() {
+            if !mask[i] { continue }
+            mask[i] = row[bit] == cmp(bit_n * 2, mask_n);
+        }
+
+        bit += 1;
+    }
+}
+
+fn calc_oxygen_rating(data: &Vec<Vec<bool>>) -> u32 {
+    calc_rating(&data, &|bit_count, mask_count_half| bit_count >= mask_count_half)
+}
+
+fn calc_co2_rating(data: &Vec<Vec<bool>>) -> u32 {
+    calc_rating(&data, &|bit_count, mask_count_half| bit_count < mask_count_half)
+}
+
+fn calc_life_support_rating(data: &Vec<Vec<bool>>) -> u32 {
+    let oxy_rating = calc_oxygen_rating(&data);
+    let co2_rating = calc_co2_rating(&data);
+    return oxy_rating * co2_rating;
+}
+
+fn main() {
+    let data = parse_input();
+    println!("{:?}", calc_power_consumption(&data));
+    println!("{:?}", calc_life_support_rating(&data));
+}
