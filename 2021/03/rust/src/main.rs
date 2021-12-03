@@ -19,16 +19,9 @@ fn power_consumption(data: &Vec<Vec<bool>>) -> u32 {
     let mut bit_n: u32;
 
     loop {
-        bit_n = 0;
-        for row in data.iter() {
-            if row[bit] { bit_n += 1 };
-        }
-
-        if bit_n > data_len_half { 
-            gamma += bit_val;
-        } else {
-            epsilon += bit_val;
-        }
+        bit_n = data.iter().map(|row| row[bit] as u32).sum();
+        if bit_n > data_len_half { gamma += bit_val } 
+        else { epsilon += bit_val }
 
         if bit == 0 { break }
         bit -= 1;
@@ -54,22 +47,22 @@ fn bool_vec_to_value(data: &Vec<bool>) -> u32 {
 }
 
 fn rating(data: &Vec<Vec<bool>>, cmp: fn(u32, u32) -> bool) -> u32 {
+    let mut mask: Vec<bool> = vec![true; data.len()];
     let mut bit: usize = 0;
-    let mut mask: Vec<bool> = data.iter().map(|_| true).collect();
     let mut mask_n: u32;
     let mut bit_n: u32;
 
-    // find position of oxygen generator rating
     loop {
         mask_n = mask.iter().filter(|i| **i).count() as u32;
+        if mask_n <= 1 { 
+            let rating_pos = mask.iter().position(|&i| i).unwrap();
+            return bool_vec_to_value(&data[rating_pos]);
+        }
 
         // count most common bit
-        bit_n = 0;
-        for (i, row) in data.iter().enumerate() {
-            if !mask[i] { continue }
-            if mask_n <= 1 { return bool_vec_to_value(&row) };
-            if row[bit] { bit_n += 1 }
-        }
+        bit_n = data.iter().enumerate()
+            .map(|(i, row)| (mask[i] && row[bit]) as u32)
+            .sum();
 
         // apply next mask
         for (i, row) in data.iter().enumerate() {
