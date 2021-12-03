@@ -53,7 +53,7 @@ fn bool_vec_to_value(data: &Vec<bool>) -> u32 {
     return value
 }
 
-fn rating(data: &Vec<Vec<bool>>, cmp: &dyn Fn(u32, u32) -> bool) -> u32 {
+fn rating(data: &Vec<Vec<bool>>, cmp: fn(u32, u32) -> bool) -> u32 {
     let mut bit: usize = 0;
     let mut mask: Vec<bool> = data.iter().map(|_| true).collect();
     let mut mask_n: u32;
@@ -82,11 +82,11 @@ fn rating(data: &Vec<Vec<bool>>, cmp: &dyn Fn(u32, u32) -> bool) -> u32 {
 }
 
 fn oxygen_rating(data: &Vec<Vec<bool>>) -> u32 {
-    rating(&data, &|bit_count, mask_count_half| bit_count >= mask_count_half)
+    rating(&data, |bit_count, mask_count_half| bit_count >= mask_count_half)
 }
 
 fn co2_rating(data: &Vec<Vec<bool>>) -> u32 {
-    rating(&data, &|bit_count, mask_count_half| bit_count < mask_count_half)
+    rating(&data, |bit_count, mask_count_half| bit_count < mask_count_half)
 }
 
 fn life_support_rating(data: &Vec<Vec<bool>>) -> u32 {
