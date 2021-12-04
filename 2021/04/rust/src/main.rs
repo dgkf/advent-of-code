@@ -96,18 +96,14 @@ fn first_winning_score(cards: &Vec<BingoCard>, numbers: &Vec<u32>) -> u32 {
 }
 
 fn last_winning_score(cards: &Vec<BingoCard>, numbers: &Vec<u32>) -> u32 {
-    let mut card_mask = vec![true; cards.len()];
-    let mut last_winning_score: u32 = 0;
-    for n in 5..numbers.len() {
-        for (i, card) in cards.iter().enumerate() {
-            if !card_mask[i] { continue }
-            if has_bingo(&card, &numbers[0..n]) { 
-                last_winning_score = score_card(&card, &numbers[0..n]);
-                card_mask[i] = false;
+    for n in (5..numbers.len()).rev() {
+        for card in cards {
+            if !has_bingo(&card, &numbers[0..n]) { 
+                return score_card(&card, &numbers[0..n+1]);
             }
         }
     }
-    last_winning_score
+    0
 }
 
 fn main() {
