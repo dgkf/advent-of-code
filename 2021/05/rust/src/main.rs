@@ -10,6 +10,17 @@ struct Point {
     y: i32,
 }
 
+impl FromStr for Point {
+    type Err = Box<dyn std::error::Error>;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let vals: Vec<i32> = s.split(",")
+            .map(|c| i32::from_str(c).unwrap())
+            .collect();
+
+        Ok(Point{ x: vals[0], y: vals[1] }) 
+    }
+}
+
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 struct Line {
     start: Point,
@@ -19,10 +30,10 @@ struct Line {
 impl FromStr for Line {
     type Err = Box<dyn std::error::Error>;
     fn from_str(line: &str) -> Result<Self, Self::Err> {
-        let mut point_strs = line.split(" -> ");
-        let start: Vec<i32> = point_strs.next().unwrap().split(",").map(|c| i32::from_str(c).unwrap()).collect();
-        let end: Vec<i32> = point_strs.next().unwrap().split(",").map(|c| i32::from_str(c).unwrap()).collect();
-        Ok(Line{ start: Point{ x: start[0], y: start[1] }, end: Point{ x: end[0], y: end[1] } }) 
+        let mut pstr = line.split(" -> ");
+        let start = Point::from_str(pstr.next().unwrap()).unwrap();
+        let end   = Point::from_str(pstr.next().unwrap()).unwrap();
+        Ok(Line{ start, end })
     }
 }
 
