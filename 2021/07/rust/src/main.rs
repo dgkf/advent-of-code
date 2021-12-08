@@ -32,6 +32,3 @@ fn main() {
     println!("{:?}", horz_pos_crab_logic(&crabs));
     println!("Elapsed: {:?}", now.elapsed());
 }
-
-
-
