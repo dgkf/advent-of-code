@@ -8,10 +8,6 @@ struct Entry {
     output: Vec<Vec<u8>>
 }
 
-fn bit_vec_to_num(bits: Vec<u8>) -> u8 {
-    bits.iter().enumerate().map(|(i, x)| x << i).reduce(|l, r| l | r).unwrap()
-}
-
 fn build_panel_counts_mapping() -> HashMap<u8, u8> {
     let mut panel_counts = HashMap::new();
     panel_counts.insert(6, 1);
@@ -20,18 +16,18 @@ fn build_panel_counts_mapping() -> HashMap<u8, u8> {
     panel_counts
 }
 
-fn build_digit_array_mapping() -> HashMap<Vec<u8>, u8> {
+fn build_digit_array_mapping() -> HashMap<[u8; 7], u8> {
     let mut digits = HashMap::new();
-    digits.insert(vec![1, 1, 1, 0, 1, 1, 1], 0);
-    digits.insert(vec![0, 0, 1, 0, 0, 1, 0], 1);
-    digits.insert(vec![1, 0, 1, 1, 1, 0, 1], 2);
-    digits.insert(vec![1, 0, 1, 1, 0, 1, 1], 3);
-    digits.insert(vec![0, 1, 1, 1, 0, 1, 0], 4);
-    digits.insert(vec![1, 1, 0, 1, 0, 1, 1], 5);
-    digits.insert(vec![1, 1, 0, 1, 1, 1, 1], 6);
-    digits.insert(vec![1, 0, 1, 0, 0, 1, 0], 7);
-    digits.insert(vec![1, 1, 1, 1, 1, 1, 1], 8);
-    digits.insert(vec![1, 1, 1, 1, 0, 1, 1], 9);
+    digits.insert([1, 1, 1, 0, 1, 1, 1], 0);
+    digits.insert([0, 0, 1, 0, 0, 1, 0], 1);
+    digits.insert([1, 0, 1, 1, 1, 0, 1], 2);
+    digits.insert([1, 0, 1, 1, 0, 1, 1], 3);
+    digits.insert([0, 1, 1, 1, 0, 1, 0], 4);
+    digits.insert([1, 1, 0, 1, 0, 1, 1], 5);
+    digits.insert([1, 1, 0, 1, 1, 1, 1], 6);
+    digits.insert([1, 0, 1, 0, 0, 1, 0], 7);
+    digits.insert([1, 1, 1, 1, 1, 1, 1], 8);
+    digits.insert([1, 1, 1, 1, 0, 1, 1], 9);
     digits
 }
 
@@ -102,27 +98,28 @@ fn remap_entries(entries: &Vec<Entry>, pc: &HashMap<u8, u8>) -> Vec<Entry> {
     entries.iter().map(|e| remap_entry(e, &pc)).collect()
 }
 
-fn output_vec_to_panel_vec(v: &Vec<u8>) -> Vec<u8> {
-    let mut out = vec![0; 7];
+fn output_vec_to_panel_vec(v: &Vec<u8>) -> [u8; 7] {
+    let mut out: [u8; 7] = [0; 7];
     for i in v { out[*i as usize] = 1 }
     out
 }
 
-fn entry_output(ent: &Entry, digits: &HashMap<Vec<u8>, u8>) -> Vec<u8> {
+fn entry_output(ent: &Entry, digits: &HashMap<[u8; 7], u8>) -> Vec<u8> {
     ent.output.iter()
         .map(|o| digits[&output_vec_to_panel_vec(o)])
         .collect()
 }
 
-fn entry_outputs(entries: &Vec<Entry>, digits: &HashMap<Vec<u8>, u8>) -> Vec<Vec<u8>> {
+fn entry_outputs(entries: &Vec<Entry>, digits: &HashMap<[u8; 7], u8>) -> Vec<Vec<u8>> {
     entries.iter().map(|e| entry_output(e, &digits)).collect()
 }
 
 fn count_easy(output: &Vec<Vec<u8>>) -> u32 {
+    const EASY: [u8; 4] = [1, 4, 7, 8];
     let mut count = 0;
     for output_i in output {
         for n in output_i {
-            if vec![1, 4, 7, 8].contains(n) {
+            if EASY.contains(n) {
                 count += 1;
             }
         }
