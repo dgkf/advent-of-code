@@ -18,19 +18,16 @@ fn parse_input() -> Vec<Vec<char>> {
 }
 
 fn analyze_syntax_errors(line: &Vec<char>) -> LineStatus {
+    const OPEN: [char; 4] = ['[', '(', '<', '{'];
+    const CLOSE: [char; 4] = [']', ')', '>', '}'];
+
+    let match_brace = |c| &OPEN[CLOSE.iter().position(|x| x == c).unwrap()];
     let mut stack: Vec<char> = vec![];
 
     for c in line {
-        if vec!['[', '(', '<', '{'].contains(c) { 
-            stack.push(*c);
-        } else if (c == &']' && stack.last().unwrap() != &'[') ||
-            (c == &')' && stack.last().unwrap() != &'(') ||
-            (c == &'>' && stack.last().unwrap() != &'<') ||
-            (c == &'}' && stack.last().unwrap() != &'{') { 
-            return LineStatus::SyntaxError(*c);
-        } else {
-            stack.pop();
-        }
+        if OPEN.contains(c) { stack.push(*c); } 
+        else if stack.last().unwrap() == match_brace(c) { stack.pop(); } 
+        else { return LineStatus::SyntaxError(*c); }
     }
 
     if stack.len() == 0 { 
@@ -78,7 +75,6 @@ fn score_incomplete_line_errors(lines: &Vec<Vec<char>>) -> u64 {
     scores.sort();
     scores[scores.len() / 2]
 }
-
 
 fn main() {
     let now = Instant::now();
