@@ -1,6 +1,5 @@
 use std::io::{stdin, BufRead};
 use std::time::Instant;
-use std::collections::HashMap;
 
 #[derive(Debug)]
 enum PacketData {
@@ -99,28 +98,20 @@ where T: Iterator<Item = bool> {
     }
 }
 
-fn parse_input() -> Option<Packet> {
-    let encoding = HashMap::from([
-        ('0', [false, false, false, false]),
-        ('1', [false, false, false,  true]),
-        ('2', [false, false,  true, false]),
-        ('3', [false, false,  true,  true]),
-        ('4', [false,  true, false, false]),
-        ('5', [false,  true, false,  true]),
-        ('6', [false,  true,  true, false]),
-        ('7', [false,  true,  true,  true]),
-        ('8', [ true, false, false, false]),
-        ('9', [ true, false, false,  true]),
-        ('A', [ true, false,  true, false]),
-        ('B', [ true, false,  true,  true]),
-        ('C', [ true,  true, false, false]),
-        ('D', [ true,  true, false,  true]),
-        ('E', [ true,  true,  true, false]),
-        ('F', [ true,  true,  true,  true]),
-    ]);
+fn parse_char_as_bits(c: char) -> [bool; 4] {
+    let c = c as u8;
+    let mut vec: [bool; 4] = [false; 4];
+    let mut val = if c <= b'9' { c - b'0' } else { c - b'A' + 10 };
+    for i in (0..4).rev() {
+        let cmp = 2_u8.pow(i);
+        if val >= cmp { vec[(3 - i) as usize] = true; val -= cmp }
+    }
+    vec
+}
 
+fn parse_input() -> Option<Packet> {
     let input = stdin().lock().lines().next().unwrap().unwrap();
-    let mut bitstream = input.chars().flat_map(|i| *encoding.get(&i).unwrap());
+    let mut bitstream = input.chars().flat_map(parse_char_as_bits);
     let (packet, _) = parse_packet(&mut bitstream)?;
     Some(packet)
 }
