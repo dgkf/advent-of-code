@@ -4,6 +4,10 @@ use std::str::FromStr;
 use std::collections::HashMap;
 use nalgebra::*;
 
+// I can't for the life of me figure out how to add a matrix row and a vector.
+// Instead of continuing to pour over rust docs, I'll bear the shame of writing
+// out vector additions by hand.
+
 #[derive(Debug, Clone)]
 struct Scanner {
     beacons: MatrixXx3<i32>,
