@@ -13,10 +13,14 @@ Stdin ← {𝕩
 SplitLines ← { nl((⊢-˜¬×+`)∘=⊔⊢)𝕏1 }
 SplitNums  ← { '0'((⊢-˜¬×+`)∘>⊔⊢)𝕏1 }
 ParseNum   ← 10⊸×⊸+˜´∘⌽-⟜'0'
-Parse      ← (∘‿4) ⥊ (ParseNum¨ ∘ ∾SplitNums¨ ∘ SplitLines)
+Parse      ← (∘‿4) ⥊ (ParseNum¨ ∘ ∾SplitNums¨)
 
 elves ← Parse Stdin 0
 
-# I am absolutely sure there is a far better way to do this, but it's late
-•Show +´ (((((0 ⊏˘ elves) ≥ (2 ⊏˘ elves)) × ((1 ⊏˘ elves) ≤ (3 ⊏˘ elves))) + (((2 ⊏˘ elves) ≥ (0 ⊏˘ elves)) × ((3 ⊏˘ elves) ≤ (1 ⊏˘ elves)))) > 0)
-•Show +´ (((((1 ⊏˘ elves) ≥ (2 ⊏˘ elves)) × ((3 ⊏˘ elves) ≥ (0 ⊏˘ elves))) + (((2 ⊏˘ elves) ≥ (1 ⊏˘ elves)) × ((0 ⊏˘ elves) ≥ (3 ⊏˘ elves)))) > 0)
+# I'm sure there is a way to make this frighteningly terse, but I haven't figured it out
+•Show+´((((0⊏⍉)≥(2⊏⍉))∧((3⊏⍉)≥(1⊏⍉)))∨(((0⊏⍉)≤(2⊏⍉))∧((3⊏⍉)≤(1⊏⍉)))) elves
+•Show+´((((1⊏⍉)≥(2⊏⍉))∧((3⊏⍉)≥(0⊏⍉)))∨(((1⊏⍉)≤(2⊏⍉))∧((3⊏⍉)≤(0⊏⍉)))) elves
+
+# Almost there ... 
+# •Show +´⥊ >1↓⚇1 1↓∧`⍉⟨≥,≤⟩{𝕎`𝕩}⌜(2/↕2)⊔(0‿2‿3‿1⊏⊢) ⍉elves
+# •Show +´⥊ >1↓⚇1 1↓∧`⍉⟨≥,≤⟩{𝕎`𝕩}⌜(2/↕2)⊔(1‿2‿3‿0⊏⊢) ⍉elves
