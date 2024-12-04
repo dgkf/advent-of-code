@@ -1,42 +1,72 @@
-use std::{collections::HashMap, io};
+use std::{collections::HashMap, fmt::Display, io};
 
-fn main() {
-    let lines = io::stdin().lines();
+struct HistorianLists {
+    left: Vec<u32>,
+    right: Vec<u32>,
+}
 
-    let mut list1: Vec<u32> = vec![];
-    let mut list2: Vec<u32> = vec![];
+impl TryFrom<Vec<String>> for HistorianLists {
+    type Error = std::io::Error;
 
-    for line in lines {
-        let line = line.unwrap();
-        let elems: Vec<_> = line.split_whitespace().take(2).collect();
-        list1.push(elems[0].parse().unwrap());
-        list2.push(elems[1].parse().unwrap());
+    fn try_from(value: Vec<String>) -> Result<Self, Self::Error> {
+        let err = || io::Error::new(io::ErrorKind::InvalidInput, "Invalid Lists");
+
+        let mut left = vec![0; value.len()];
+        let mut right = vec![0; value.len()];
+
+        for line in value {
+            let elems: Vec<_> = line.split_whitespace().take(2).collect();
+            left.push(elems[0].parse().map_err(|_| err())?);
+            right.push(elems[1].parse().map_err(|_| err())?);
+        }
+
+        left.sort();
+        right.sort();
+
+        Ok(HistorianLists { left, right })
+    }
+}
+
+impl HistorianLists {
+    fn total_distance(&self) -> u32 {
+        self.left
+            .iter()
+            .zip(self.right.iter())
+            .map(|(l, r)| l.abs_diff(*r))
+            .sum()
     }
 
-    list1.sort();
-    list2.sort();
+    fn similarity_score(&self) -> u32 {
+        let mut counts: HashMap<u32, u32> = HashMap::new();
+        for i in self.right.iter() {
+            counts
+                .entry(*i)
+                .and_modify(|value| *value += 1)
+                .or_insert(1);
+        }
 
-    // part 1
-    let part1: u32 = list1
-        .iter()
-        .zip(list2.iter())
-        .map(|(l, r)| l.abs_diff(*r))
-        .sum();
-
-    // part 2
-    let mut list2counts: HashMap<u32, u32> = HashMap::new();
-    for i in list2.iter() {
-        list2counts
-            .entry(*i)
-            .and_modify(|value| *value += 1)
-            .or_insert(1);
+        self.left
+            .iter()
+            .map(|i| i * counts.get(i).unwrap_or(&0))
+            .sum()
     }
+}
 
-    let part2: u32 = list1
-        .iter()
-        .map(|i| i * list2counts.get(i).unwrap_or(&0))
-        .sum();
+impl Display for HistorianLists {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}\n{}", self.total_distance(), self.similarity_score())
+    }
+}
 
-    println!("{part1}");
-    println!("{part2}");
+fn main() -> Result<(), std::io::Error> {
+    let lines: Vec<String> = io::stdin()
+        .lines()
+        .take_while(|i| i.is_ok())
+        .flatten()
+        .collect();
+
+    let hists: HistorianLists = lines.try_into()?;
+    println!("{hists}");
+
+    Ok(())
 }
