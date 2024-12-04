@@ -9,6 +9,7 @@ input from a session on the advent of code website. This can be found using
 an inspector for network requests in most web browsers.
 
 **./cookies.secret**
+
 ```txt
 session=<96 character session token>
 ```
