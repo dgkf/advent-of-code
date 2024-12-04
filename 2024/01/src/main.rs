@@ -9,15 +9,20 @@ impl TryFrom<Vec<String>> for HistorianLists {
     type Error = std::io::Error;
 
     fn try_from(value: Vec<String>) -> Result<Self, Self::Error> {
-        let err = || io::Error::new(io::ErrorKind::InvalidInput, "Invalid Lists");
+        let err = |i| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                format!("Invalid list at row {}", i + 1),
+            )
+        };
 
         let mut left = vec![0; value.len()];
         let mut right = vec![0; value.len()];
 
-        for line in value {
+        for (i, line) in value.into_iter().enumerate() {
             let elems: Vec<_> = line.split_whitespace().take(2).collect();
-            left.push(elems[0].parse().map_err(|_| err())?);
-            right.push(elems[1].parse().map_err(|_| err())?);
+            left[i] = elems.get(0).and_then(|x| x.parse().ok()).ok_or(err(i))?;
+            right[i] = elems.get(1).and_then(|x| x.parse().ok()).ok_or(err(i))?;
         }
 
         left.sort();
