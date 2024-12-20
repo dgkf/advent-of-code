@@ -1,4 +1,6 @@
-use std::{collections::HashMap, fmt::Display, io};
+use std::collections::HashMap;
+use std::fmt::Display;
+use std::io;
 
 struct HistorianLists {
     left: Vec<u32>,
