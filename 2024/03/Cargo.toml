@@ -1,7 +1,11 @@
 [package]
-name = "aoc02"
+name = "aoc03"
 version = "0.1.0"
 edition = "2021"
+
+[dependencies]
+regex = "1.11.1"
+regex_static = "0.1.1"
 
 [dependencies.aoc]
 path = "../../utils/aoc-rs"
